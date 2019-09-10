@@ -18,6 +18,8 @@ rm -rf /data
 # Create App 000
 source createApp000.sh
 
+pm2 stop all
+
 FILES=/data/*
 for f in $FILES; do
   echo "Processing $f file..."
