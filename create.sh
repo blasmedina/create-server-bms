@@ -14,8 +14,8 @@ npm -v
 mkdir /data
 
 # Create App 000
+rm -rf /data/app-000
 mkdir -p /data/app-000
-
 cd /data/app-000
 echo "const http = require('http');
 const HOSTNAME = '::';
