@@ -15,21 +15,21 @@ mkdir /data
 
 # Create App 000
 mkdir -p /data/app-000
-cat <<EOT >> /data/app-000/app.js
+cat > /data/app-000/app.js << EOL
 const http = require('http');
 
-const HOSTNAME = '127.0.0.1';
+const HOSTNAME = '::';
 const PORT = 3000;
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello dev.to!\n');
+  res.end('App-000');
 });
 
 server.listen(PORT, HOSTNAME, () => {
-  console.log(`Server running at ${HOSTNAME} on port ${PORT}.`);
+    console.log(`Server running at ${HOSTNAME} on port ${PORT}.`);
 });
-EOT
+EOL
 
 node /data/app-000/app.js
