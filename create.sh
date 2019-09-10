@@ -10,11 +10,12 @@ apt-get install -y nodejs
 node -v
 npm -v
 
-# Create Env
-mkdir /data
+# Install PM2
+npm install -g pm2
+
+rm -rf /data
 
 # Create App 000
-rm -rf /data/app-000
 mkdir -p /data/app-000
 cd /data/app-000
 echo "const http = require('http');
@@ -30,4 +31,6 @@ server.listen(PORT, HOSTNAME, () => {
 });
 ">>index.js
 
-node /data/app-000/index.js
+pm2 start /data/app-000/index.js
+
+exit 0
