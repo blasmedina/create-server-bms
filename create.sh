@@ -15,8 +15,8 @@ mkdir /data
 
 # Create App 000
 mkdir -p /data/app-000
-cat > /data/app-000/app.js << EOL
-const http = require('http');
+
+echo "const http = require('http');
 
 const HOSTNAME = '::';
 const PORT = 3000;
@@ -30,6 +30,6 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, HOSTNAME, () => {
     console.log(`Server running at ${HOSTNAME} on port ${PORT}.`);
 });
-EOL
+" >> /data/app-000/index.js
 
-node /data/app-000/app.js
+node /data/app-000/index.js
