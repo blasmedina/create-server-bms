@@ -16,21 +16,13 @@ npm install -g pm2
 rm -rf /data
 
 # Create App 000
-mkdir -p /data/app-000
-cd /data/app-000
-echo "const http = require('http');
-const HOSTNAME = '::';
-const PORT = 3000;
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('App-000');
-});
-server.listen(PORT, HOSTNAME, () => {
-    console.log(`Server running at ${HOSTNAME} on port ${PORT}.`);
-});
-">>index.js
+source createApp000.sh
 
-pm2 start /data/app-000/index.js
+FILES=/data/*
+for f in $FILES; do
+  echo "Processing $f file..."
+  # take action on each file. $f store current file name
+  # pm2 start /data/app-000/index.js
+done
 
 exit 0
