@@ -4,9 +4,9 @@
 
 ##### Constants
 
+DIRECTORY=$0
 APP_TEST_NAME=$1
 APP_TEST_POST=$2
-
 PATH_APP=$DIRECTORY/$APP_TEST_NAME
 
 ##### Main

@@ -2,6 +2,10 @@
 
 # sysinfo_page - A script to create apps test
 
+##### Constants
+
+DIRECTORY=$0
+
 ##### Main
 
 for i in {0..9}
@@ -10,6 +14,5 @@ do
     # APP_TEST_POST="300${i}"
     NAME="app-00${i}"
     POST="300${i}"
-    echo "$PWD"
-    source libs/create-app-test.sh $NAME $POST
+    source $PWD/libs/create-app-test.sh $DIRECTORY $NAME $POST
 done
