@@ -10,6 +10,12 @@ DIRECTORY="/data"
 pm2 delete all
 
 APPS=$DIRECTORY/*
+APP_TEST_NAME="app-000"
+APP_TEST_POST="3000"
+source pm2-reload-app.sh
+
+APP_TEST_NAME="app-001"
+APP_TEST_POST="3001"
 source pm2-reload-app.sh
 
 exit 0
