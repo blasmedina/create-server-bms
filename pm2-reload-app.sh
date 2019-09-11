@@ -1,7 +1,7 @@
 #!/bin/bash
 
-for f in $FILES; do
-  echo "Processing $f file..."
-  appName="$(basename "$f")"
-  pm2 start $f/index.js --name $appName
+for folder in $APPS; do
+  appName="$(basename "$folder")"
+  echo "Processing $appName..."
+  pm2 start $folder/index.js --name $appName
 done

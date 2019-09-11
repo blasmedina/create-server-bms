@@ -9,7 +9,7 @@ DIRECTORY="/data"
 
 pm2 delete all
 
-FILES=$DIRECTORY/*
+APPS=$DIRECTORY/*
 source pm2-reload-app.sh
 
 exit 0
