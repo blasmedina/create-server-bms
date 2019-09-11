@@ -4,7 +4,7 @@
 
 ##### Constants
 
-DIRECTORY=$0
+DIRECTORY_=$0
 
 ##### Main
 
@@ -14,6 +14,6 @@ do
     # APP_TEST_POST="300${i}"
     NAME="app-00${i}"
     POST="300${i}"
-    echo "${DIRECTORY}"
+    echo "${DIRECTORY_}"
     # source $PWD/libs/create-app-test.sh $DIRECTORY $NAME $POST
 done
