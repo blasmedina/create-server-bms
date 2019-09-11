@@ -18,13 +18,13 @@ rm -rf /data
 # Create App 000
 source createApp000.sh
 
-pm2 stop all
+pm2 delete all
 
 FILES=/data/*
 for f in $FILES; do
   echo "Processing $f file..."
-  # take action on each file. $f store current file name
-  # pm2 start /data/app-000/index.js
+  appName="${f##*/}"
+  pm2 start $f/index.js --name $appName
 done
 
 exit 0
