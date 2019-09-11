@@ -4,7 +4,7 @@
 
 ##### Constants
 
-DIRECTORY="/data"
+DIRECTORY=$1
 
 ##### Main
 
