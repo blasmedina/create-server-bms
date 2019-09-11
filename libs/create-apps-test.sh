@@ -14,5 +14,6 @@ do
     # APP_TEST_POST="300${i}"
     NAME="app-00${i}"
     POST="300${i}"
-    source $PWD/libs/create-app-test.sh $DIRECTORY $NAME $POST
+    echo "${DIRECTORY}"
+    # source $PWD/libs/create-app-test.sh $DIRECTORY $NAME $POST
 done
