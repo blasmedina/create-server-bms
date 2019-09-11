@@ -13,4 +13,5 @@ END=$2
 for (( i=$START; i<=$END; i++ ))
 do
     source $PWD/libs/create-app-test.sh $DIRECTORY "app-00${i}" "300${i}"
+    source $PWD/libs/config-nginx-apps.sh ~ "app-00${i}" "300${i}"
 done

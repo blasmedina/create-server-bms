@@ -4,8 +4,10 @@
 
 ##### Constants
 
-APPS=$1/*
-PATH_FILE=test.conf
+DIRECTORY=$1
+APP_TEST_NAME=$2
+APP_TEST_POST=$3
+PATH_FILE=$DIRECTORY/test.txt
 
 ##### Main
 
@@ -22,8 +24,8 @@ server {
     root /var/www/html;
     index index.html index.htm index.nginx-debian.html;
     server_name _;
-    location / {
-        proxy_pass http://localhost:3000;
+    location /${APP_TEST_NAME}/ {
+        proxy_pass http://localhost:${APP_TEST_POST};
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';

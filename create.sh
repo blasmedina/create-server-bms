@@ -20,7 +20,6 @@ DIRECTORY=$1
 pm2 delete all
 sudo rm -rf $DIRECTORY
 source $PWD/libs/create-apps-test.sh $DIRECTORY 2
-# source libs/install-nginx.sh
-source libs/config-nginx-apps.sh $DIRECTORY
+# source $PWD/libs/install-nginx.sh
 source $PWD/libs/pm2-reload-app.sh $DIRECTORY
 exit 0
