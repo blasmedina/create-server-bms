@@ -11,7 +11,7 @@ PATH_APP=$DIRECTORY/$APP_TEST_NAME
 
 ##### Main
 
-echo "Create app test ${PATH_APP} port ${POST}"
+echo "Create app test ${PATH_APP} port ${APP_TEST_POST}"
 sudo rm -rf $PATH_APP
 sudo mkdir -p $PATH_APP
 sudo sh -c "cat >> ${PATH_APP}/index.js" <<-EOF

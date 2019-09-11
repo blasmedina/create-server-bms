@@ -19,5 +19,7 @@ DIRECTORY=$1
 # source libs/install-pm2.sh
 pm2 delete all
 source $PWD/libs/create-apps-test.sh $DIRECTORY
+# source libs/install-nginx.sh
+source libs/config-nginx-apps.sh $DIRECTORY
 source $PWD/libs/pm2-reload-app.sh $DIRECTORY
 exit 0
