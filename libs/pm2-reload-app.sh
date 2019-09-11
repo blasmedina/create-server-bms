@@ -4,7 +4,7 @@
 
 ##### Constants
 
-APPS=$0/*
+APPS=$1/*
 
 ##### Main
 

@@ -4,7 +4,7 @@
 
 ##### Constants
 
-DIRECTORY_=$0
+DIRECTORY_=$1
 
 ##### Main
 

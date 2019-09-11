@@ -17,6 +17,6 @@ pm2 delete all
 
 source $PWD/libs/create-apps-test.sh $DIRECTORY
 
-# source $PWD/libs/pm2-reload-app.sh $DIRECTORY
+source $PWD/libs/pm2-reload-app.sh $DIRECTORY
 
 exit 0
