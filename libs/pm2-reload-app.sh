@@ -4,12 +4,12 @@
 
 ##### Constants
 
-APPS=$0/*
+APPS=$1/*
 
 ##### Main
 
 for folder in $APPS; do
   appName="$(basename "$folder")"
-  echo "Processing $appName..."
+  echo "Processing $folder..."
   # pm2 start $folder/index.js --name $appName
 done
