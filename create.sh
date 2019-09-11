@@ -1,5 +1,5 @@
 #!/bin/bash
-DIR_INIT=$PWD
+
 DIRECTORY="/data"
 # sudo apt-get update
 # source install-git.sh
