@@ -1,15 +1,23 @@
 #!/bin/bash
 
-DIRECTORY="/data"
+# sysinfo_page - A script to create server bms
+
+##### Constants
+
+if [ "$1" == "" ]; then
+    echo "Debe ingresar un directorio base"
+    exit 0
+fi
+
+DIRECTORY=$1
+
+##### Main
+
 # sudo apt-get update
-# source install-git.sh
-# source install-nodejs.sh
-# source install-pm2.sh
-
+# source libs/install-git.sh
+# source libs/install-nodejs.sh
+# source libs/install-pm2.sh
 pm2 delete all
-
-APPS=$DIRECTORY/*
-source create-apps-test.sh
-
-source pm2-reload-app.sh
+source $PWD/libs/create-apps-test.sh $DIRECTORY
+source $PWD/libs/pm2-reload-app.sh $DIRECTORY
 exit 0
