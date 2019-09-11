@@ -4,6 +4,11 @@
 
 ##### Constants
 
+if [ "$1" == "" ]; then
+    echo "Debe ingresar un directorio base"
+    exit 0
+fi
+
 DIRECTORY=$1
 
 ##### Main

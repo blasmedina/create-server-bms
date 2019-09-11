@@ -11,5 +11,5 @@ APPS=$1/*
 for folder in $APPS; do
   appName="$(basename "$folder")"
   echo "Processing $folder..."
-  pm2 start $folder/index.js --name $appName
+  pm2 start $folder/index.js --name $appName --watch
 done
