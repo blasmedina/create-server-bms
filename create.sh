@@ -5,7 +5,6 @@ DIRECTORY="/data"
 # source install-git.sh
 # source install-nodejs.sh
 # source install-pm2.sh
-sudo rm -rf $DIRECTORY
 
 pm2 delete all
 
