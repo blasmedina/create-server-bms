@@ -1,15 +1,22 @@
 #!/bin/bash
 
+# sysinfo_page - A script to create server bms
+
+##### Constants
+
 DIRECTORY="/data"
+
+##### Main
+
 # sudo apt-get update
-# source install-git.sh
-# source install-nodejs.sh
-# source install-pm2.sh
+# source libs/install-git.sh
+# source libs/install-nodejs.sh
+# source libs/install-pm2.sh
 
 pm2 delete all
 
-APPS=$DIRECTORY/*
-source create-apps-test.sh
+source libs/create-apps-test.sh
 
-source pm2-reload-app.sh
+source libs/pm2-reload-app.sh ${DIRECTORY}
+
 exit 0
