@@ -15,7 +15,7 @@ DIRECTORY="/data"
 
 pm2 delete all
 
-source libs/create-apps-test.sh ${DIRECTORY}
+source libs/create-apps-test.sh
 
 # source libs/pm2-reload-app.sh $DIRECTORY
 
