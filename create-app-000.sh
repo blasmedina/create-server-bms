@@ -1,7 +1,8 @@
 #!/bin/bash
 
-mkdir -p /data/app-000
-cd /data/app-000
+# Create App 000
+mkdir -p $DIRECTORY/app-000
+cd $DIRECTORY/app-000
 echo "const http = require('http');
 const HOSTNAME = '::';
 const PORT = 3000;
