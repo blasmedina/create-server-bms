@@ -1,7 +1,7 @@
 #!/bin/bash
 DIR_INIT=$PWD
 DIRECTORY="/data"
-# apt-get update
+# sudo apt-get update
 # source install-git.sh
 # source install-nodejs.sh
 # source install-pm2.sh

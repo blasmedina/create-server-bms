@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Create App Test
-mkdir -p $DIRECTORY/$APP_TEST_NAME
+sudo mkdir -p $DIRECTORY/$APP_TEST_NAME
 cd $DIRECTORY/$APP_TEST_NAME
-cat > index.js <<EOL
+sudo cat > index.js <<EOL
 const http = require('http');
 const HOSTNAME = '::';
 const PORT = ${APP_TEST_POST};
