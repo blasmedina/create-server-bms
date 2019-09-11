@@ -9,13 +9,12 @@ DIRECTORY="/data"
 pm2 delete all
 
 APPS=$DIRECTORY/*
-APP_TEST_NAME="app-000"
-APP_TEST_POST="3000"
-source create-app-test.sh
-
-APP_TEST_NAME="app-001"
-APP_TEST_POST="3001"
-source create-app-test.sh
+for i in {0..9}
+do
+    APP_TEST_NAME="app-00${i}"
+    APP_TEST_POST="300${i}"
+    source create-app-test.sh
+done
 
 source pm2-reload-app.sh
 exit 0
