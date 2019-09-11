@@ -5,6 +5,7 @@
 ##### Constants
 
 APPS=$1/*
+PATH_FILE=$1/test.conf
 
 ##### Main
 
@@ -13,8 +14,8 @@ APPS=$1/*
 #   echo "Processing $folder..."
 #   pm2 start $folder/index.js --name $appName --watch
 # done
-
-sudo sh -c "cat >> ${1}/test.conf" <<-EOF
+echo "Create config nginx ${PATH_FILE}"
+sudo sh -c "cat >> ${PATH_FILE}" <<-EOF
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -31,3 +32,5 @@ server {
     }
 }
 EOF
+
+cat $PATH_FILE

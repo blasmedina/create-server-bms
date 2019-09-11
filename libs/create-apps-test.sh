@@ -5,10 +5,11 @@
 ##### Constants
 
 DIRECTORY=$1
+COUNT=$2
 
 ##### Main
 
-for i in {0..9}
+for i in {0..$COUNT}
 do
     source $PWD/libs/create-app-test.sh $DIRECTORY "app-00${i}" "300${i}"
 done
