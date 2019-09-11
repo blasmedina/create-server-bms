@@ -5,7 +5,7 @@
 ##### Constants
 
 APPS=$1/*
-PATH_FILE=$1/test.conf
+PATH_FILE=test.conf
 
 ##### Main
 

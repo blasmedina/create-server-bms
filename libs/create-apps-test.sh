@@ -10,7 +10,7 @@ END=$2
 
 ##### Main
 
-for i in {$START..$END}
+for (( i=$START; i<=$END; i++ ))
 do
     source $PWD/libs/create-app-test.sh $DIRECTORY "app-00${i}" "300${i}"
 done
