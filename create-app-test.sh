@@ -11,7 +11,7 @@ const PORT = ${APP_TEST_POST};
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
-  res.end(${APP_TEST_NAME});
+  res.end("${APP_TEST_NAME}");
 });
 server.listen(PORT, HOSTNAME, () => {
     console.log("Server run");
