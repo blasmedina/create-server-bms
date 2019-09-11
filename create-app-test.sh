@@ -16,3 +16,4 @@ server.listen(PORT, HOSTNAME, () => {
     console.log("Server run");
 });
 EOL
+cd $DIR_INIT
