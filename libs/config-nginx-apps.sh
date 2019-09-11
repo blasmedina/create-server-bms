@@ -4,10 +4,10 @@
 
 ##### Constants
 
-DIRECTORY=$1
+PATH_CONFIG=$1
 APP_TEST_NAME=$2
 APP_TEST_POST=$3
-PATH_FILE=$DIRECTORY/test.txt
+PATH_FILE=$PATH_CONFIG/conf_${APP_TEST_NAME}.txt
 
 ##### Main
 
