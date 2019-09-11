@@ -10,5 +10,6 @@ do
     # APP_TEST_POST="300${i}"
     NAME="app-00${i}"
     POST="300${i}"
+    echo "$PWD"
     source libs/create-app-test.sh $NAME $POST
 done
