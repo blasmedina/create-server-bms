@@ -2,12 +2,16 @@
 
 # sysinfo_page - A script to create app test
 
-##### Constants
+##### Main
 
 PATH_CONFIG_NGINX_SERVER=$1
 PATH_CONFIG_NGINX_APPS=$2
+FILE=/etc/nginx/sites-enabled/blasmedina
 
-##### Main
+if [[ -f "$PATH_CONFIG_NGINX_SERVER" ]]; then
+    echo "Delete config nginx app ${PATH_CONFIG_NGINX_SERVER}"
+    sudo rm $PATH_CONFIG_NGINX_SERVER
+fi
 
 echo "Create config nginx apps ${PATH_CONFIG_NGINX_SERVER}"
 sudo sh -c "cat >> ${PATH_CONFIG_NGINX_SERVER}" <<-EOF
@@ -22,5 +26,10 @@ server {
 }
 EOF
 
+if [[ -f "$FILE" ]]; then
+    sudo rm $FILE
+fi
+
+sudo ln -s $PATH_CONFIG_NGINX_SERVER $FILE
 # sudo nginx -t
-# sudo systemctl restart nginx
+sudo systemctl restart nginx
