@@ -7,11 +7,11 @@
 PATH_CONFIG=$1
 APP_TEST_NAME=$2
 APP_TEST_POST=$3
-PATH_CONFIG_FILE=$PATH_CONFIG/conf_${APP_TEST_NAME}.txt
+PATH_CONFIG_FILE=$PATH_CONFIG/conf_${APP_TEST_NAME}.conf
 
 ##### Main
 
-echo "Create config nginx ${PATH_CONFIG_FILE}"
+echo "Create config nginx app ${PATH_CONFIG_FILE}"
 sudo rm $PATH_CONFIG_FILE
 sudo sh -c "cat >> ${PATH_CONFIG_FILE}" <<-EOF
 location /${APP_TEST_NAME}/ {

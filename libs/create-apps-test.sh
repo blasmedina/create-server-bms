@@ -15,5 +15,5 @@ echo "Create apps (${END}) test ${PATH_APPS} ${PATH_CONFIG_NGINX_APPS}"
 for (( i=$START; i<=$END; i++ ))
 do
     source $PWD/libs/create-app-test.sh $PATH_APPS "app-00${i}" "300${i}"
-    source $PWD/libs/config-nginx-apps.sh $PATH_CONFIG_NGINX_APPS "app-00${i}" "300${i}"
+    source $PWD/libs/config-nginx-app.sh $PATH_CONFIG_NGINX_APPS "app-00${i}" "300${i}"
 done

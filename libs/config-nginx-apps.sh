@@ -9,7 +9,7 @@ PATH_CONFIG_NGINX_APPS=$2
 
 ##### Main
 
-echo "Create config nginx ${PATH_CONFIG_NGINX_SERVER}"
+echo "Create config nginx apps ${PATH_CONFIG_NGINX_SERVER}"
 sudo rm $PATH_CONFIG_NGINX_SERVER
 sudo sh -c "cat >> ${PATH_CONFIG_NGINX_SERVER}" <<-EOF
 server {

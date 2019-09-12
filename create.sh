@@ -11,7 +11,7 @@ fi
 
 TARGET_DIRECTORY=$1
 PATH_CONFIG_NGINX_SERVER="/etc/nginx/sites-available/blasmedina"
-PATH_CONFIG_NGINX_APPS="/etc/nginx/apps_blasmedina"
+PATH_CONFIG_NGINX_APPS="/etc/nginx/conf.d"
 
 ##### Main
 
