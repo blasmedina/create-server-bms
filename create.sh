@@ -20,6 +20,7 @@ PATH_CONFIG_NGINX_APPS="/etc/nginx/default.d"
 # source libs/install-nodejs.sh
 # source libs/install-pm2.sh
 source $PWD/libs/install-nginx.sh
+sudo mkdir -p $PATH_CONFIG_NGINX_APPS
 
 pm2 delete all
 sudo rm -rf $TARGET_DIRECTORY
