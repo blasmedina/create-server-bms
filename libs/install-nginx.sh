@@ -4,4 +4,4 @@
 
 ##### Main
 
-sudo apt install nginx
+sudo apt install -y nginx
