@@ -12,7 +12,6 @@ PATH_CONFIG_FILE=$PATH_CONFIG/conf_${APP_TEST_NAME}.conf
 ##### Main
 
 echo "Create config nginx app ${PATH_CONFIG_FILE}"
-sudo rm $PATH_CONFIG_FILE
 sudo sh -c "cat >> ${PATH_CONFIG_FILE}" <<-EOF
 location /${APP_TEST_NAME}/ {
     proxy_pass http://localhost:${APP_TEST_POST};
@@ -23,5 +22,3 @@ location /${APP_TEST_NAME}/ {
     proxy_cache_bypass \$http_upgrade;
 }
 EOF
-
-cat $PATH_FILE
