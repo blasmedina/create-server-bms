@@ -7,12 +7,13 @@
 PATH_CONFIG=$1
 APP_TEST_NAME=$2
 APP_TEST_POST=$3
-PATH_FILE=$PATH_CONFIG/conf_${APP_TEST_NAME}.txt
+PATH_CONFIG_FILE=$PATH_CONFIG/conf_${APP_TEST_NAME}.txt
 
 ##### Main
 
-echo "Create config nginx ${PATH_FILE}"
-sudo sh -c "cat >> ${PATH_FILE}" <<-EOF
+echo "Create config nginx ${PATH_CONFIG_FILE}"
+sudo rm $PATH_CONFIG_FILE
+sudo sh -c "cat >> ${PATH_CONFIG_FILE}" <<-EOF
 location /${APP_TEST_NAME}/ {
     proxy_pass http://localhost:${APP_TEST_POST};
     proxy_http_version 1.1;
