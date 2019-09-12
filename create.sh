@@ -26,6 +26,5 @@ pm2 delete all
 sudo rm -rf $TARGET_DIRECTORY
 source $PWD/libs/create-apps-test.sh $TARGET_DIRECTORY 2 $PATH_CONFIG_NGINX_APPS
 source $PWD/libs/pm2-reload-app.sh $TARGET_DIRECTORY
-
-# source $PWD/libs/config-nginx-appp.sh $PATH_CONFIG_NGINX_SERVER $PATH_CONFIG_NGINX_APPS
+source $PWD/libs/config-nginx-appp.sh $PATH_CONFIG_NGINX_SERVER $PATH_CONFIG_NGINX_APPS
 exit 0
