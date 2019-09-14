@@ -4,19 +4,18 @@
 
 ##### Main
 
-PATH_APPS=$1
+APP_TEST_PATH=$1
 APP_TEST_NAME=$2
 APP_TEST_POST=$3
-PATH_APP=$PATH_APPS/$APP_TEST_NAME
 
-if [ -d "$PATH_APP" ]; then
-    echo "Create app ${PATH_APP}"
-    sudo rm -rf $PATH_APP
+if [ -d "$APP_TEST_PATH" ]; then
+    echo "Create app ${APP_TEST_PATH}"
+    sudo rm -rf $APP_TEST_PATH
 if
 
-echo "Create app test ${PATH_APP} port ${APP_TEST_POST}"
-sudo mkdir -p $PATH_APP
-sudo sh -c "cat >> ${PATH_APP}/index.js" <<-EOF
+echo "Create app test ${APP_TEST_PATH} port ${APP_TEST_POST}"
+sudo mkdir -p $APP_TEST_PATH
+sudo sh -c "cat >> ${APP_TEST_PATH}/index.js" <<-EOF
 const http = require('http');
 const HOSTNAME = '127.0.0.1';
 const PORT = ${APP_TEST_POST};

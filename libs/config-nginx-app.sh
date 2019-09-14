@@ -4,10 +4,9 @@
 
 ##### Main
 
-PATH_CONFIG=$1
+PATH_CONFIG_FILE=$1
 APP_TEST_NAME=$2
 APP_TEST_POST=$3
-PATH_CONFIG_FILE=$PATH_CONFIG/conf-${APP_TEST_NAME}.conf
 
 if [[ -f "$PATH_CONFIG_FILE" ]]; then
     echo "Delete config nginx app ${PATH_CONFIG_FILE}"
