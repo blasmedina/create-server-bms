@@ -11,7 +11,7 @@ APP_TEST_POST=$3
 if [ -d "$APP_TEST_PATH" ]; then
     echo "Create app ${APP_TEST_PATH}"
     sudo rm -rf $APP_TEST_PATH
-if
+fi
 
 echo "Create app test ${APP_TEST_PATH} port ${APP_TEST_POST}"
 sudo mkdir -p $APP_TEST_PATH
