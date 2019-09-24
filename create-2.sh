@@ -344,4 +344,5 @@ EOF
 
 ##### Main
 
+SCRIPT_DIR=$(pwd)
 main "$@"
