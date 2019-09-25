@@ -72,11 +72,10 @@ content_to_file() {
 }
 
 config_nginx_app() {
-    local PATH_NGINX=$1
-    local PATH_APP=$2
-    local PORT_APP=$3
+    local PATH_APP=$1
+    local PORT_APP=$2
     local NAME_APP="$(basename -- $PATH_APP)"
-    local PATH_NGINX_APP="${PATH_NGINX}/${NAME_APP}.conf"
+    local PATH_NGINX_APP="${PATH_NGINX_APPS}/${NAME_APP}.conf"
     local CONTENT=$(cat <<-EOF
 location ^~ /${NAME_APP} {
     proxy_pass http://localhost:${PORT_APP};
@@ -126,28 +125,25 @@ count_number_of_digits_in_a_number() {
 }
 
 create_apps_test() {
-    while :
-    do
-        echo "enter a number: \c"
-        read number
-        len=${#number}
-        testvar=$(echo "$number" | tr -dc '[:digit:]')   # remove non-numeric chars from $number
-        if [[ $len -ne ${#testvar} ]] ; then  # if you had all numeric chars they would be the same length
-            echo "$number is not a number"  # error message
-        else
-            break      #exit the loop
+    while true; do
+        read -r -p "${BOLD}Please enter number app test: ${RESET}" NUMBER_APPS
+        if [[ $NUMBER_APPS =~ ^[0-9]+$ ]]; then
+            break;
         fi
     done
-
-    local COUNT_APPS=$1
-    local nd=$(count_number_of_digits_in_a_number $COUNT_APPS)
-    echo "create (${COUNT_APPS}) apps test in ${PATH_APPS}"
-    for (( i=0; i<$COUNT_APPS; i++ )); do
+    local nd=$(count_number_of_digits_in_a_number $NUMBER_APPS)
+    echo "create (${NUMBER_APPS}) apps test in ${PATH_APPS}"
+    if ! [[ -d "$PATH_APPS" ]]; then
+        mkdir -p $PATH_APPS
+    fi
+    local CURRENT_DIRECTORY_NUMBER=$(find $PATH_APPS/* -maxdepth 0 -type d | wc -l)
+    for (( c=0; c<$NUMBER_APPS; c++ )); do
+        local i=$(($c + $CURRENT_DIRECTORY_NUMBER))
         local ID=$(printf "%0${nd}d" ${i})
         local PATH_APP="${PATH_APPS}/app-test-${ID}"
         local PORT_APP=$((3000 + $i))
         create_app_test $PATH_APP $PORT_APP
-        config_nginx_app $PATH_NGINX_APPS $PATH_APP $PORT_APP
+        config_nginx_app $PATH_APP $PORT_APP
     done
 }
 
@@ -213,8 +209,10 @@ pm2_autoload_apps() {
             local APP_NAME="$(basename "$d")"
             local FILE="${d}/index.js"
             if [ -f "$FILE" ]; then
-                echo "pm2 start '${APP_NAME}' PATH:$d"
+                echo "pm2 start '${APP_NAME}' PATH:${d}"
                 # pm2 start $d/index.js --name $APP_NAME --watch
+            else
+                echo "not found ${FILE}"
             fi
         fi
     done
@@ -233,6 +231,7 @@ EOF
 
 config_bind_zones_blasmedina() {
     local DATE=$(date '+%Y%m%d')
+    local IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
     local CONTENT=$(cat <<-EOF
 \$ttl $((60*60))
 ${DOMAIN}.  IN      SOA     $HOSTNAME. root.${DOMAIN}. (
@@ -254,6 +253,7 @@ EOF
 }
 
 config_nginx() {
+    # sudo service nginx stop
     # mkdir -p $PATH_NGINX_APPS
     config_nginx_site_blasmedina
     config_nginx_site_www_blasmedina
@@ -274,6 +274,7 @@ install() {
 }
 
 create_menu() {
+    header
     options=(
         "Install"
         "Clean Path App"
@@ -292,15 +293,7 @@ create_menu() {
                 rm -rf $PATH_APPS
                 ;;
             "Create App Test")
-                local COUNT_APPS=0
-                while true; do
-                    read -r -p "Please enter count app test: " number
-                    if [[ $number =~ ^[0-9]+$ ]]; then
-                        count=$number
-                        break;
-                    fi
-                done
-                create_apps_test number
+                create_apps_test
                 ;;
             "Config Nginx")
                 config_nginx
@@ -319,16 +312,27 @@ create_menu() {
     done
 }
 
+header() {
+    tput reset
+    cat <<-EOF
+    ▄▄▄▄· • ▌ ▄ ·. .▄▄ · 
+    ▐█ ▀█▪·██ ▐███▪▐█ ▀. 
+    ▐█▀▀█▄▐█ ▌▐▌▐█·▄▀▀▀█▄
+    ██▄▪▐███ ██▌▐█▌▐█▄▪▐█
+    ·▀▀▀▀ ▀▀  █▪▀▀▀ ▀▀▀▀ 
+EOF
+}
+
 main() {
-    local IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
+    
+    echo
+    local SCRIPT_DIR=$(pwd)
     local DOMAIN="blasmedina.cl"
     local PATH_APPS="${SCRIPT_DIR}/apps"
-    local PATH_BIND="/etc/bind"
-    local PATH_NGINX="/etc/nginx"
-    local PATH_NGINX_APPS="${PATH_NGINX}/default.d"
-    local PATH_NGINX_SITES_AVAILABLE="${PATH_NGINX}/sites-available"
-    local PATH_NGINX_SITES_ENABLED="${PATH_NGINX}/sites-enabled"
-    local PATH_BIND_ZONES="${PATH_BIND}/zones"
+    local PATH_NGINX_APPS="/etc/nginx/default.d"
+    local PATH_NGINX_SITES_AVAILABLE="/etc/nginx/sites-available"
+    local PATH_NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
+    local PATH_BIND_ZONES="/etc/bind/zones"
     local CONTENT_PROXY=$(cat <<-EOF
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
@@ -344,5 +348,4 @@ EOF
 
 ##### Main
 
-SCRIPT_DIR=$(pwd)
 main "$@"
