@@ -64,11 +64,20 @@ install_pm2() {
 
 content_to_file() {
     local CONTENT=$1
-    local PATH=$2
-    echo "${BLUE}SAVE:${PATH}${RESET}"
+    local PATH_FILE=$2
+    local DEBUG=$3
+    echo "${BLUE}SAVE:${PATH_FILE}${RESET}"
     echo "${BOLD}$CONTENT${RESET}"
+    if ! [ -z ${DEBUG} ]; then
+        if [ $DEBUG = true ]; then
+            local DIR_FILE="$(dirname -- $PATH_FILE)"
+            if ! [[ -d "$DIR_FILE" ]]; then
+                mkdir -p $DIR_FILE
+            fi
+            echo "$CONTENT" >> "${PATH_FILE}"
+        fi    
+    fi
     echo
-    # echo "$CONTENT" >> "${PATH}"
 }
 
 config_nginx_app() {
@@ -87,14 +96,15 @@ EOF
     content_to_file "${CONTENT}" "${PATH_NGINX_APP}"
 }
 
-create_app_test() {
+create_index_app_test() {
     local PATH_APP=$1
     local PORT_APP=$2
     local NAME_APP="$(basename -- $PATH_APP)"
     local CONTENT=$(cat <<-EOF
+require('dotenv').config();
 const http = require('http');
 const HOSTNAME = '127.0.0.1';
-const PORT = ${PORT_APP};
+const PORT = process.env.POST || ${PORT_APP};
 const server = http.createServer((req, res) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain');
@@ -105,13 +115,61 @@ server.listen(PORT, HOSTNAME, () => {
 });
 EOF
 )
-    echo "create '${NAME_APP}' PATH:${PATH_APP} PORT:${PORT_APP}"
+    content_to_file "${CONTENT}" "${PATH_APP}/src/index.js" true
+}
 
-    if [ -d "$PATH_APP" ]; then
-        rm -rf $PATH_APP
-    fi
-    mkdir -p $PATH_APP
-    content_to_file "${CONTENT}" "${PATH_APP}/index.js"
+create_ecosystem_app_test() {
+    local PATH_APP=$1
+    local PORT_APP=$2
+    local NAME_APP="$(basename -- $PATH_APP)"
+    local CONTENT=$(cat <<-EOF
+module.exports = {
+    apps: [{
+        name: "${NAME_APP}",
+        script: "./src/index.js",
+        instances: "max",
+        env: {
+            "POST": ${PORT_APP},
+            "NODE_ENV": "production",
+        }
+    }]
+}
+EOF
+)
+    content_to_file "${CONTENT}" "${PATH_APP}/ecosystem.config.js" true
+}
+
+create_package_app_test() {
+    local PATH_APP=$1
+    local NAME_APP="$(basename -- $PATH_APP)"
+    local CONTENT=$(cat <<-EOF
+{
+    "name": "${NAME_APP}",
+    "version": "1.0.0",
+    "description": "",
+    "main": "./src/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "Blas Medina <r.blas.m.c@gmail.com>",
+    "license": "ISC",
+    "dependencies": {
+        "dotenv": "^8.1.0"
+    }
+}
+EOF
+)
+    content_to_file "${CONTENT}" "${PATH_APP}/package.js" true
+}
+
+create_app_test() {
+    local PATH_APP=$1
+    local PORT_APP=$2
+    create_index_app_test $PATH_APP $PORT_APP
+    create_package_app_test $PATH_APP $PORT_APP
+    create_ecosystem_app_test $PATH_APP $PORT_APP
+    # npm i
 }
 
 count_number_of_digits_in_a_number() {
@@ -210,7 +268,10 @@ pm2_autoload_apps() {
             local FILE="${d}/index.js"
             if [ -f "$FILE" ]; then
                 echo "pm2 start '${APP_NAME}' PATH:${d}"
+                cd $d
                 # pm2 start $d/index.js --name $APP_NAME --watch
+                # pm2 start
+                cd $SCRIPT_DIR
             else
                 echo "not found ${FILE}"
             fi
@@ -274,7 +335,7 @@ install() {
 }
 
 create_menu() {
-    header
+    # header
     options=(
         "Install"
         "Clean Path App"
@@ -324,7 +385,6 @@ EOF
 }
 
 main() {
-    
     echo
     local SCRIPT_DIR=$(pwd)
     local DOMAIN="blasmedina.cl"
