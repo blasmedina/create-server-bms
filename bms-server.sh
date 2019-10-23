@@ -55,6 +55,7 @@ get_public_ip() {
 main() {
     local DOMAIN="blasmedina.cl"
     local PATH_BIND_ZONES="/etc/bind/zones"
+    setup_color
     create_zone
 }
 
