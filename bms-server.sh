@@ -225,6 +225,22 @@ create_app_test() {
     # npm i
 }
 
+config_nginx_app() {
+    local PATH_APP=$1
+    local PORT_APP=$2
+    local NAME_APP="$(basename -- $PATH_APP)"
+    local PATH_NGINX_APP="${PATH_NGINX_APPS}/${NAME_APP}.conf"
+    local CONTENT=$(cat <<-EOF
+location ^~ /${NAME_APP} {
+    proxy_pass http://localhost:${PORT_APP};
+${CONTENT_PROXY}
+}
+EOF
+)
+    echo "config nginx '${NAME_APP}' PATH:${PATH_NGINX_APP} PORT:${PORT_APP}"
+    create_file "${CONTENT}" "${PATH_NGINX_APP}"
+}
+
 create_apps_test() {
     local NUMBER_APPS=$1
     if [ -z ${NUMBER_APPS} ]; then
