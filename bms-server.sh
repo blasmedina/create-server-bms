@@ -227,7 +227,7 @@ create_app_test() {
 
 create_apps_test() {
     local NUMBER_APPS=$1
-    if ! [ -z ${NUMBER_APPS} ]; then
+    if [ -z ${NUMBER_APPS} ]; then
         while true; do
             read -r -p "${BOLD}Please enter number app test: ${RESET}" NUMBER_APPS
             if [[ $NUMBER_APPS =~ ^[0-9]+$ ]]; then
