@@ -287,6 +287,13 @@ clear_path_apps() {
     fi
 }
 
+modo_debug() {
+    if ! [ $DEBUG = true ]; then
+    else
+        echo "${YELLOW}** MODO DEBUG **${RESET}"
+    fi
+}
+
 main() {
     local DEBUG=true
     local SCRIPT_DIR=$(pwd)
@@ -307,10 +314,11 @@ main() {
 EOF
 )
     setup_color
-    config_bind
-    config_nginx
-    clear_path_apps
-    create_apps_test 2
+    modo_debug
+    # config_bind
+    # config_nginx
+    # clear_path_apps
+    # create_apps_test 2
 }
 
 main "$@"
