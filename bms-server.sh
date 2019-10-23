@@ -1,5 +1,52 @@
 #!/usr/bin/env bash
 
+set -e
+
+command_exists() {
+    command -v "$@" >/dev/null 2>&1
+}
+
+setup_color() {
+    # Only use colors if connected to a terminal
+    if [ -t 1 ]; then
+        RED=$(printf '\033[31m')
+        GREEN=$(printf '\033[32m')
+        YELLOW=$(printf '\033[33m')
+        BLUE=$(printf '\033[34m')
+        BOLD=$(printf '\033[1m')
+        RESET=$(printf '\033[m')
+    else
+        RED=""
+        GREEN=""
+        YELLOW=""
+        BLUE=""
+        BOLD=""
+        RESET=""
+    fi
+}
+
+error() {
+    echo ${RED}"Error: $@"${RESET} >&2
+}
+
+content_to_file() {
+    local CONTENT=$1
+    local PATH_FILE=$2
+    local DEBUG=$3
+    echo "${BLUE}SAVE:${PATH_FILE}${RESET}"
+    echo "${BOLD}$CONTENT${RESET}"
+    # if ! [ -z ${DEBUG} ]; then
+    #     if [ $DEBUG = true ]; then
+    #         local DIR_FILE="$(dirname -- $PATH_FILE)"
+    #         if ! [[ -d "$DIR_FILE" ]]; then
+    #             mkdir -p $DIR_FILE
+    #         fi
+    #         echo "$CONTENT" >> "${PATH_FILE}"
+    #     fi    
+    # fi
+    echo
+}
+
 get_public_ip() {
     local PUBLIC_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
     echo "$PUBLIC_IP"
@@ -7,6 +54,7 @@ get_public_ip() {
 
 main() {
     local DOMAIN="blasmedina.cl"
+    local PATH_BIND_ZONES="/etc/bind/zones"
     create_zone
 }
 
@@ -36,7 +84,11 @@ _acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_01}"
 _acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_02}"
 EOF
 )
-    echo "$CONTENT"
+    content_to_file "${CONTENT}" "${PATH_BIND_ZONES}/${DOMAIN}.db"
+}
+
+create_file() {
+
 }
 
 main "$@"
