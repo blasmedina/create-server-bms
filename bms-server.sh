@@ -33,7 +33,7 @@ create_file() {
     local CONTENT=$1
     local PATH_FILE=$2
     local NO_DEBUG=$3
-    echo "${BLUE}SAVE: \"${PATH_FILE}${RESET}\""
+    echo "${GREEN}SAVE: \"${PATH_FILE}${RESET}\""
     echo "${BOLD}$CONTENT${RESET}"
     # if ! [ -z ${NO_DEBUG} ]; then
     #     if [ $NO_DEBUG = true ]; then
@@ -149,7 +149,7 @@ config_nginx() {
     config_nginx__site_www_blasmedina
 }
 
-create_index_app_test() {
+create_app_test__index() {
     local PATH_APP=$1
     local PORT_APP=$2
     local NAME_APP="$(basename -- $PATH_APP)"
@@ -171,13 +171,13 @@ EOF
     create_file "${CONTENT}" "${PATH_APP}/src/index.js"
 }
 
-create_package_app_test() {
+create_app_test__package() {
     local PATH_APP=$1
-    local NAME_APP="$(basename -- $PATH_APP)"
+    local NAME_APP=$2
     local CONTENT=$(cat <<-EOF
 {
     "name": "${NAME_APP}",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "description": "",
     "main": "./src/index.js",
     "scripts": {
@@ -195,10 +195,10 @@ EOF
     create_file "${CONTENT}" "${PATH_APP}/package.js"
 }
 
-create_ecosystem_app_test() {
+create_app_test__ecosystem() {
     local PATH_APP=$1
-    local PORT_APP=$2
-    local NAME_APP="$(basename -- $PATH_APP)"
+    local NAME_APP=$2
+    local PORT_APP=$3
     local CONTENT=$(cat <<-EOF
 module.exports = {
     apps: [{
@@ -218,17 +218,17 @@ EOF
 
 create_app_test() {
     local PATH_APP=$1
-    local PORT_APP=$2
-    create_index_app_test $PATH_APP $PORT_APP
-    create_package_app_test $PATH_APP $PORT_APP
-    create_ecosystem_app_test $PATH_APP $PORT_APP
+    local NAME_APP=$2
+    local PORT_APP=$3
+    create_app_test__package $PATH_APP $NAME_APP
+    create_app_test__index $PATH_APP $NAME_APP $PORT_APP
+    create_app_test__ecosystem $PATH_APP $NAME_APP $PORT_APP
     # npm i
 }
 
 config_nginx_app() {
-    local PATH_APP=$1
+    local NAME_APP=$1
     local PORT_APP=$2
-    local NAME_APP="$(basename -- $PATH_APP)"
     local PATH_NGINX_APP="${PATH_NGINX_APPS}/${NAME_APP}.conf"
     local CONTENT=$(cat <<-EOF
 location ^~ /${NAME_APP} {
@@ -237,7 +237,7 @@ ${CONTENT_PROXY}
 }
 EOF
 )
-    echo "${GREEN}config nginx '${NAME_APP}' PATH:${PATH_NGINX_APP} PORT:${PORT_APP}${RESET}"
+    echo "${BLUE}config nginx '${NAME_APP}' PATH:${PATH_NGINX_APP} PORT:${PORT_APP}${RESET}"
     create_file "${CONTENT}" "${PATH_NGINX_APP}"
 }
 
@@ -252,7 +252,7 @@ create_apps_test() {
         done
     fi
     local nd=$(count_number_of_digits_in_a_number $NUMBER_APPS)
-    echo "create (${NUMBER_APPS}) apps test in ${PATH_APPS}"
+    echo "${BLUE}create (${NUMBER_APPS}) apps test in ${PATH_APPS}${RESET}"
     if ! [[ -d "$PATH_APPS" ]]; then
         mkdir -p $PATH_APPS
     fi
@@ -260,10 +260,12 @@ create_apps_test() {
     for (( c=0; c<$NUMBER_APPS; c++ )); do
         local i=$(($c + $CURRENT_DIRECTORY_NUMBER))
         local ID=$(printf "%0${nd}d" ${i})
-        local PATH_APP="${PATH_APPS}/app-test-${ID}"
+        local NAME_APP="app-test-${ID}"
+        local PATH_APP="${PATH_APPS}/${NAME_APP}"
         local PORT_APP=$((3000 + $i))
-        create_app_test $PATH_APP $PORT_APP
-        config_nginx_app $PATH_APP $PORT_APP
+        echo "${BLUE}create app test \"${NAME_APP}\"${RESET}"
+        create_app_test $PATH_APP $NAME_APP $PORT_APP
+        config_nginx_app $NAME_APP $PORT_APP
     done
 }
 
