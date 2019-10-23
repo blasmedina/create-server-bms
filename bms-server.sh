@@ -29,7 +29,7 @@ error() {
     echo ${RED}"Error: $@"${RESET} >&2
 }
 
-content_to_file() {
+create_file() {
     local CONTENT=$1
     local PATH_FILE=$2
     local DEBUG=$3
@@ -84,11 +84,7 @@ _acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_01}"
 _acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_02}"
 EOF
 )
-    content_to_file "${CONTENT}" "${PATH_BIND_ZONES}/${DOMAIN}.db"
-}
-
-create_file() {
-
+    create_file "${CONTENT}" "${PATH_BIND_ZONES}/${DOMAIN}.db"
 }
 
 main "$@"
