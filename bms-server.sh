@@ -237,7 +237,7 @@ ${CONTENT_PROXY}
 }
 EOF
 )
-    echo "config nginx '${NAME_APP}' PATH:${PATH_NGINX_APP} PORT:${PORT_APP}"
+    echo "${GREEN}config nginx '${NAME_APP}' PATH:${PATH_NGINX_APP} PORT:${PORT_APP}${RESET}"
     create_file "${CONTENT}" "${PATH_NGINX_APP}"
 }
 
@@ -276,7 +276,7 @@ main() {
     local PATH_NGINX_APPS="${PATH_NGINX}/default.d"
     local PATH_NGINX_SITES_AVAILABLE="${PATH_NGINX}/sites-available"
     local PATH_NGINX_SITES_ENABLED="${PATH_NGINX}/sites-enabled"
-    local PATH_APPS="${SCRIPT_DIR}/apps"
+    local PATH_APPS="/data/apps"
     setup_color
     config_bind
     config_nginx
