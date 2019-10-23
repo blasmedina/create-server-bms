@@ -33,7 +33,7 @@ create_file() {
     local CONTENT=$1
     local PATH_FILE=$2
     local NO_DEBUG=$3
-    echo "${GREEN}SAVE: \"${PATH_FILE}${RESET}\""
+    echo "${GREEN}SAVE: \"${PATH_FILE}\"${RESET}"
     echo "${BOLD}$CONTENT${RESET}"
     # if ! [ -z ${NO_DEBUG} ]; then
     #     if [ $NO_DEBUG = true ]; then
@@ -237,7 +237,7 @@ ${CONTENT_PROXY}
 }
 EOF
 )
-    echo "${BLUE}config nginx '${NAME_APP}' PATH:${PATH_NGINX_APP} PORT:${PORT_APP}${RESET}"
+    echo "${BLUE}config nginx NAME:${NAME_APP} PATH:${PATH_NGINX_APP} PORT:${PORT_APP}${RESET}"
     create_file "${CONTENT}" "${PATH_NGINX_APP}"
 }
 
@@ -279,6 +279,14 @@ main() {
     local PATH_NGINX_SITES_AVAILABLE="${PATH_NGINX}/sites-available"
     local PATH_NGINX_SITES_ENABLED="${PATH_NGINX}/sites-enabled"
     local PATH_APPS="/data/apps"
+    local CONTENT_PROXY=$(cat <<-EOF
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+EOF
+)
     setup_color
     config_bind
     config_nginx
