@@ -33,18 +33,25 @@ create_file() {
     local CONTENT=$1
     local PATH_FILE=$2
     local NO_DEBUG=$3
-    echo "${GREEN}SAVE: \"${PATH_FILE}\"${RESET}"
-    echo "${BOLD}$CONTENT${RESET}"
-    # if ! [ -z ${NO_DEBUG} ]; then
-    #     if [ $NO_DEBUG = true ]; then
-    #         local DIR_FILE="$(dirname -- $PATH_FILE)"
-    #         if ! [[ -d "$DIR_FILE" ]]; then
-    #             mkdir -p $DIR_FILE
-    #         fi
-    #         echo "$CONTENT" >> "${PATH_FILE}"
-    #     fi    
-    # fi
+    if ! [ $DEBUG = true ]; then
+        local DIR_FILE="$(dirname -- $PATH_FILE)"
+        if ! [[ -d "$DIR_FILE" ]]; then
+            mkdir -p $DIR_FILE
+        fi
+        echo "$CONTENT" >> "${PATH_FILE}"
+    else
+        echo "${GREEN}SAVE: \"${PATH_FILE}\"${RESET}"
+        echo "${BOLD}$CONTENT${RESET}"
+    fi
     echo
+}
+
+create_link_symbolic() {
+    local ORIGIN_PATH=$1
+    local DESTINATION_PATH=$2
+    if ! [ $DEBUG = true ]; then
+        ln -s $ORIGIN_PATH $DESTINATION_PATH
+    fi
 }
 
 count_number_of_digits_in_a_number() {
@@ -120,7 +127,7 @@ server {
 EOF
 )
     create_file "${CONTENT}" "${PATH_FILE}"
-    # ln -s "${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}" "${PATH_NGINX_SITES_ENABLED}/${NAME_SITE}"
+    create_link_symbolic "${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}" "${PATH_NGINX_SITES_ENABLED}/${NAME_SITE}"
 }
 
 config_nginx__site_www_blasmedina() {
@@ -141,7 +148,7 @@ ${CONTENT_PROXY}
 EOF
 )
     create_file "${CONTENT}" "${PATH_FILE}"
-    # ln -s "${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}" "${PATH_NGINX_SITES_ENABLED}/${NAME_SITE}"
+    create_link_symbolic "${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}" "${PATH_NGINX_SITES_ENABLED}/${NAME_SITE}"
 }
 
 config_nginx() {
@@ -216,6 +223,11 @@ EOF
     create_file "${CONTENT}" "${PATH_APP}/ecosystem.config.js"
 }
 
+install_dependencies() {
+    local PATH_APP=$1
+    cd $PATH_APP && npm i
+}
+
 create_app_test() {
     local PATH_APP=$1
     local NAME_APP=$2
@@ -223,7 +235,7 @@ create_app_test() {
     create_app_test__package $PATH_APP $NAME_APP
     create_app_test__index $PATH_APP $NAME_APP $PORT_APP
     create_app_test__ecosystem $PATH_APP $NAME_APP $PORT_APP
-    # npm i
+    install_dependencies $PATH_APP
 }
 
 config_nginx_app() {
@@ -269,7 +281,14 @@ create_apps_test() {
     done
 }
 
+clear_path_apps() {
+    if ! [ $DEBUG = true ]; then
+        rm -rf $PATH_APPS
+    fi
+}
+
 main() {
+    local DEBUG=true
     local SCRIPT_DIR=$(pwd)
     local DOMAIN="blasmedina.cl"
     local PATH_BIND="/etc/bind"
@@ -290,6 +309,7 @@ EOF
     setup_color
     config_bind
     config_nginx
+    clear_path_apps
     create_apps_test 2
 }
 
