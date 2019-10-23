@@ -98,6 +98,8 @@ config_bind() {
 }
 
 config_nginx__site_blasmedina() {
+    local NAME_SITE="${DOMAIN}"
+    local PATH_FILE="${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}"
     local CONTENT=$(cat <<-EOF
 server {
     listen 80;
@@ -107,12 +109,13 @@ server {
 }
 EOF
 )
-    create_file "${CONTENT}" "${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}"
+    create_file "${CONTENT}" "${PATH_FILE}"
     # ln -s "${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}" "${PATH_NGINX_SITES_ENABLED}/${NAME_SITE}"
 }
 
 config_nginx__site_www_blasmedina() {
     local NAME_SITE="www.${DOMAIN}"
+    local PATH_FILE="${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}"
     local CONTENT=$(cat <<-EOF
 server {
     listen 80;
@@ -127,7 +130,7 @@ ${CONTENT_PROXY}
 }
 EOF
 )
-    create_file "${CONTENT}" "${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}"
+    create_file "${CONTENT}" "${PATH_FILE}"
     # ln -s "${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}" "${PATH_NGINX_SITES_ENABLED}/${NAME_SITE}"
 }
 
