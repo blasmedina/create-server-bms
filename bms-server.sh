@@ -47,6 +47,16 @@ create_file() {
     echo
 }
 
+count_number_of_digits_in_a_number() {
+    local nd=0
+    local n=$1
+    while [ $n -gt 0 ]; do
+        n=$(( $n / 10 )) 
+        nd=$(( $nd + 1))
+    done
+    return $nd
+}
+
 get_public_ip() {
     local PUBLIC_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
     echo "$PUBLIC_IP"
@@ -139,7 +149,110 @@ config_nginx() {
     config_nginx__site_www_blasmedina
 }
 
+create_index_app_test() {
+    local PATH_APP=$1
+    local PORT_APP=$2
+    local NAME_APP="$(basename -- $PATH_APP)"
+    local CONTENT=$(cat <<-EOF
+require('dotenv').config();
+const http = require('http');
+const HOSTNAME = '127.0.0.1';
+const PORT = process.env.POST || ${PORT_APP};
+const server = http.createServer((req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end("${NAME_APP}");
+});
+server.listen(PORT, HOSTNAME, () => {
+    console.log("Server run");
+});
+EOF
+)
+    create_file "${CONTENT}" "${PATH_APP}/src/index.js"
+}
+
+create_package_app_test() {
+    local PATH_APP=$1
+    local NAME_APP="$(basename -- $PATH_APP)"
+    local CONTENT=$(cat <<-EOF
+{
+    "name": "${NAME_APP}",
+    "version": "1.0.0",
+    "description": "",
+    "main": "./src/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "Blas Medina <r.blas.m.c@gmail.com>",
+    "license": "ISC",
+    "dependencies": {
+        "dotenv": "^8.1.0"
+    }
+}
+EOF
+)
+    create_file "${CONTENT}" "${PATH_APP}/package.js"
+}
+
+create_ecosystem_app_test() {
+    local PATH_APP=$1
+    local PORT_APP=$2
+    local NAME_APP="$(basename -- $PATH_APP)"
+    local CONTENT=$(cat <<-EOF
+module.exports = {
+    apps: [{
+        name: "${NAME_APP}",
+        script: "./src/index.js",
+        instances: "max",
+        env: {
+            "POST": ${PORT_APP},
+            "NODE_ENV": "production",
+        }
+    }]
+}
+EOF
+)
+    create_file "${CONTENT}" "${PATH_APP}/ecosystem.config.js"
+}
+
+create_app_test() {
+    local PATH_APP=$1
+    local PORT_APP=$2
+    create_index_app_test $PATH_APP $PORT_APP
+    create_package_app_test $PATH_APP $PORT_APP
+    create_ecosystem_app_test $PATH_APP $PORT_APP
+    # npm i
+}
+
+create_apps_test() {
+    local NUMBER_APPS=$1
+    if ! [ -z ${NUMBER_APPS} ]; then
+        while true; do
+            read -r -p "${BOLD}Please enter number app test: ${RESET}" NUMBER_APPS
+            if [[ $NUMBER_APPS =~ ^[0-9]+$ ]]; then
+                break;
+            fi
+        done
+    fi
+    local nd=$(count_number_of_digits_in_a_number $NUMBER_APPS)
+    echo "create (${NUMBER_APPS}) apps test in ${PATH_APPS}"
+    if ! [[ -d "$PATH_APPS" ]]; then
+        mkdir -p $PATH_APPS
+    fi
+    local CURRENT_DIRECTORY_NUMBER=$(find $PATH_APPS/* -maxdepth 0 -type d | wc -l)
+    for (( c=0; c<$NUMBER_APPS; c++ )); do
+        local i=$(($c + $CURRENT_DIRECTORY_NUMBER))
+        local ID=$(printf "%0${nd}d" ${i})
+        local PATH_APP="${PATH_APPS}/app-test-${ID}"
+        local PORT_APP=$((3000 + $i))
+        create_app_test $PATH_APP $PORT_APP
+        config_nginx_app $PATH_APP $PORT_APP
+    done
+}
+
 main() {
+    local SCRIPT_DIR=$(pwd)
     local DOMAIN="blasmedina.cl"
     local PATH_BIND="/etc/bind"
     local PATH_BIND_ZONES="${PATH_BIND}/zones"
@@ -147,9 +260,11 @@ main() {
     local PATH_NGINX_APPS="${PATH_NGINX}/default.d"
     local PATH_NGINX_SITES_AVAILABLE="${PATH_NGINX}/sites-available"
     local PATH_NGINX_SITES_ENABLED="${PATH_NGINX}/sites-enabled"
+    local PATH_APPS="${SCRIPT_DIR}/apps"
     setup_color
     config_bind
     config_nginx
+    create_apps_test 2
 }
 
 main "$@"
