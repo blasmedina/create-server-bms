@@ -17,6 +17,8 @@ create_zone() {
     local HOUR=$((60 * 60))
     local DAY=$(($HOUR * 24))
     local WEEK=$(($DAY * 7))
+    local HASH_01=$(head -n 1 $PWD/_acme-challenge-01.txt)
+    local HASH_02=$(head -n 1 $PWD/_acme-challenge-02.txt)
     local CONTENT=$(cat <<-EOF
 \$ttl $HOUR
 ${DOMAIN}.  IN      SOA     $HOSTNAME. root.${DOMAIN}. (
@@ -30,8 +32,8 @@ ${DOMAIN}.  IN      SOA     $HOSTNAME. root.${DOMAIN}. (
 ${DOMAIN}.                      IN      A       ${IP}
 ns1.${DOMAIN}.                  IN      A       ${IP}
 www                                 IN      CNAME   ${DOMAIN}.
-_acme-challenge.${DOMAIN}.  1   IN      TXT     "cfl9U4aJbzfatSG9jyL_JQl6lV6hRtXzGcUPXqsVcOY"
-_acme-challenge.${DOMAIN}.  1   IN      TXT     "WF4_xGNJ5Li6TSlzfHdiKcaOTa9g_A8GNBxTa4Wfhx0"
+_acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_01}"
+_acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_02}"
 EOF
 )
     echo "$CONTENT"
