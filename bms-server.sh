@@ -98,7 +98,7 @@ zone "${DOMAIN}" {
 };
 EOF
 )
-    content_to_file "${CONTENT}" "${PATH_BIND}/named.conf.local"
+    create_file "${CONTENT}" "${PATH_BIND}/named.conf.local"
 }
 
 main "$@"
