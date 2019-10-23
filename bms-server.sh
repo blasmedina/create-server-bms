@@ -32,11 +32,11 @@ error() {
 create_file() {
     local CONTENT=$1
     local PATH_FILE=$2
-    local DEBUG=$3
+    local NO_DEBUG=$3
     echo "${BLUE}SAVE:${PATH_FILE}${RESET}"
     echo "${BOLD}$CONTENT${RESET}"
-    # if ! [ -z ${DEBUG} ]; then
-    #     if [ $DEBUG = true ]; then
+    # if ! [ -z ${NO_DEBUG} ]; then
+    #     if [ $NO_DEBUG = true ]; then
     #         local DIR_FILE="$(dirname -- $PATH_FILE)"
     #         if ! [[ -d "$DIR_FILE" ]]; then
     #             mkdir -p $DIR_FILE
@@ -54,9 +54,11 @@ get_public_ip() {
 
 main() {
     local DOMAIN="blasmedina.cl"
-    local PATH_BIND_ZONES="/etc/bind/zones"
+    local PATH_BIND="/etc/bind"
+    local PATH_BIND_ZONES="${PATH_BIND}/zones"
     setup_color
     create_zone
+    create_named
 }
 
 create_zone() {
@@ -86,6 +88,17 @@ _acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_02}"
 EOF
 )
     create_file "${CONTENT}" "${PATH_BIND_ZONES}/${DOMAIN}.db"
+}
+
+create_named() {
+    local CONTENT=$(cat <<-EOF
+zone "${DOMAIN}" {
+    type master;
+    file "${PATH_BIND_ZONES}/${DOMAIN}.db";
+};
+EOF
+)
+    content_to_file "${CONTENT}" "${PATH_BIND}/named.conf.local"
 }
 
 main "$@"
