@@ -411,10 +411,18 @@ pm2_apps__start() {
 clear_all() {
     if [ $DEBUG = false ]; then
         echo "${BLUE}clear all${RESET}"
-        rm -R $PATH_APPS
-        rm -R $PATH_NGINX_APPS
-        rm -R $PATH_BIND_ZONES
-        rm $PATH_NGINX_SITES_ENABLED/*
+        if [ -d "$PATH_APPS" ]; then
+            rm -rf $PATH_APPS
+        fi
+        if [ -d "$PATH_NGINX_APPS" ]; then
+            rm -rf $PATH_NGINX_APPS
+        fi
+        if [ -d "$PATH_BIND_ZONES" ]; then
+            rm -rf $PATH_BIND_ZONES
+        fi
+        if [ -d "$PATH_NGINX_SITES_ENABLED" ]; then
+            rm $PATH_NGINX_SITES_ENABLED/*
+        fi
     fi
 }
 
