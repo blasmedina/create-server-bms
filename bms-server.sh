@@ -38,6 +38,9 @@ create_file() {
         if ! [[ -d "$DIR_FILE" ]]; then
             mkdir -p $DIR_FILE
         fi
+        if [[ -f "$PATH_FILE" ]]; then
+            rm $PATH_FILE
+        fi
         echo "$CONTENT" >> "${PATH_FILE}"
     else
         echo "${GREEN}SAVE: \"${PATH_FILE}\"${RESET}"
@@ -340,6 +343,7 @@ install() {
         install__nodejs
         install__nginx
         install__pm2
+        sleep 2
     fi
 }
 
@@ -397,7 +401,7 @@ pm2_apps__start() {
 }
 
 main() {
-    local DEBUG=true
+    local DEBUG=false
     local SCRIPT_DIR=$(pwd)
     local DOMAIN="blasmedina.cl"
     local PATH_BIND="/etc/bind"
