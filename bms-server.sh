@@ -159,7 +159,7 @@ EOF
 }
 
 config_nginx() {
-    config_nginx__site_blasmedina
+    # config_nginx__site_blasmedina
     config_nginx__site_www_blasmedina
 }
 
@@ -170,7 +170,7 @@ create_app_test__index() {
     local CONTENT=$(cat <<-EOF
 require('dotenv').config();
 const http = require('http');
-const HOSTNAME = '127.0.0.1';
+const HOSTNAME = process.env.HOSTNAME || '127.0.0.1';
 const PORT = process.env.POST || ${PORT_APP};
 const server = http.createServer((req, res) => {
     res.statusCode = 200;
@@ -218,9 +218,10 @@ module.exports = {
     apps: [{
         name: "${NAME_APP}",
         script: "./src/index.js",
-        instances: "max",
+        // instances: "max",
         env: {
             "POST": ${PORT_APP},
+            "HOSTNAME": "::"
             "NODE_ENV": "production",
         }
     }]
