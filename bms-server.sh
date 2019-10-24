@@ -289,6 +289,7 @@ clear_path_apps() {
 
 modo_debug() {
     if ! [ $DEBUG = true ]; then
+        echo
     else
         echo "${YELLOW}** MODO DEBUG **${RESET}"
     fi
