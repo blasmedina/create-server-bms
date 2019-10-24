@@ -73,13 +73,6 @@ get_public_ip() {
     echo "$PUBLIC_IP"
 }
 
-get_serial() {
-    local HOURS=$(date '+%H')
-    local MINUTES=$(date '+%M')
-    local SERIAL=$(( 99 * ($HOURS * 100 + $MINUTES) / (23*100+59) ))
-    echo "$SERIAL"
-}
-
 config_bind__zone() {
     echo "${BLUE}CONFIG BIND${RESET}"
     local DATE=$(date '+%Y%m%d')
@@ -115,28 +108,32 @@ config_bind__zone_v2() {
     echo "${BLUE}CONFIG BIND${RESET}"
     local DATE=$(date '+%Y%m%d')
     local IP=$(get_public_ip)
-    local SERIAL="${DATE}00"
-    local HOUR=$((60 * 60))
-    local DAY=$(($HOUR * 24))
-    local WEEK=$(($DAY * 7))
+    local SERIAL="${DATE}04"
     local HASH_01=$(head -n 1 $PWD/_acme-challenge-01.txt)
     local HASH_02=$(head -n 1 $PWD/_acme-challenge-02.txt)
     local CONTENT=$(cat <<-EOF
 \$ORIGIN blasmedina.cl
-\$ttl $HOUR
-${DOMAIN}.  IN      SOA     $HOSTNAME. root.${DOMAIN}. (
+\$ttl 3h
+@  IN      SOA     $HOSTNAME. root.${DOMAIN}. (
                         ${SERIAL} ; serial
-                        $(($HOUR * 3)) ; time to refresh
-                        $HOUR ; time to retry
-                        $WEEK ; time to expire
-                        $DAY ; minimum TTL
+                        3h ; time to refresh
+                        1h ; time to retry
+                        1w ; time to expire
+                        1h ; minimum TTL
             )
-@                                   IN      NS      ${DOMAIN}.
-${DOMAIN}.                      IN      A       ${IP}
-ns1.${DOMAIN}.                  IN      A       ${IP}
-www                                 IN      CNAME   ${DOMAIN}.
-_acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_01}"
-_acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_02}"
+; Name Servers
+@                           3600    IN      NS      ${DOMAIN}.
+@                           3600    IN      NS      secundario.nic.cl.
+@                           3600    IN      NS      ns1.${DOMAIN}.
+@                           3600    IN      NS      ns2.${DOMAIN}.
+@                           3600    IN      NS      ns3.${DOMAIN}.
+; A Records
+@                                   IN      A       ${IP}
+; CNAME Records
+www                         3600    IN      CNAME   @
+; TXT
+_acme-challenge.${DOMAIN}.  1       IN      TXT     "${HASH_01}"
+_acme-challenge.${DOMAIN}.  1       IN      TXT     "${HASH_02}"
 EOF
 )
     create_file "$IP" "$SCRIPT_DIR/ip"
@@ -155,7 +152,7 @@ EOF
 }
 
 config_bind() {
-    config_bind__zone
+    config_bind__zone_v2
     config_bind__named
 }
 
@@ -496,6 +493,4 @@ EOF
     server__start
 }
 
-# main "$@"
-get_serial
-
+main "$@"
