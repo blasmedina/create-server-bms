@@ -316,10 +316,10 @@ EOF
 )
     setup_color
     modo_debug
-    # config_bind
-    # config_nginx
-    # clear_path_apps
-    # create_apps_test 2
+    config_bind
+    config_nginx
+    clear_path_apps
+    create_apps_test 2
 }
 
 main "$@"
