@@ -41,6 +41,7 @@ create_file() {
         if [[ -f "$PATH_FILE" ]]; then
             rm $PATH_FILE
         fi
+        echo "${GREEN}SAVE: \"${PATH_FILE}\"${RESET}"
         echo "$CONTENT" >> "${PATH_FILE}"
     else
         echo "${GREEN}SAVE: \"${PATH_FILE}\"${RESET}"
@@ -73,6 +74,7 @@ get_public_ip() {
 }
 
 config_bind__zone() {
+    echo "${BLUE}CONFIG BIND${RESET}"
     local DATE=$(date '+%Y%m%d')
     local IP=$(get_public_ip)
     local SERIAL="${DATE}00"
@@ -119,6 +121,7 @@ config_bind() {
 }
 
 config_nginx__site_blasmedina() {
+    echo "${BLUE}CONFIG NGINX${RESET}"
     local NAME_SITE="${DOMAIN}"
     local PATH_FILE="${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}"
     local CONTENT=$(cat <<-EOF
@@ -289,6 +292,7 @@ create_apps_test() {
 
 clear_path_apps() {
     if [ $DEBUG = false ]; then
+        echo "${BLUE}clear path apps${RESET}"
         rm -rf $PATH_APPS
     fi
 }
@@ -338,6 +342,7 @@ install__pm2() {
 
 install() {
     if [ $DEBUG = false ]; then
+        echo "${BLUE}INSTALL${RESET}"
         install__git
         install__bind
         install__nodejs
@@ -349,6 +354,7 @@ install() {
 
 server__stop() {
     if [ $DEBUG = false ]; then
+        echo "${BLUE}SERVER STOP${RESET}"
         service bind9 stop
         service nginx stop
         pm2_apps__stop
@@ -365,6 +371,7 @@ server__restart() {
 
 server__start() {
     if [ $DEBUG = false ]; then
+        echo "${BLUE}SERVER START${RESET}"
         service bind9 start
         service nginx start
         pm2_apps__start
@@ -410,7 +417,7 @@ main() {
     local PATH_NGINX_APPS="${PATH_NGINX}/default.d"
     local PATH_NGINX_SITES_AVAILABLE="${PATH_NGINX}/sites-available"
     local PATH_NGINX_SITES_ENABLED="${PATH_NGINX}/sites-enabled"
-    local PATH_APPS="/data/apps"
+    local PATH_APPS="/data"
     local CONTENT_PROXY=$(cat <<-EOF
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
