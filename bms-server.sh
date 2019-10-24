@@ -66,6 +66,7 @@ count_number_of_digits_in_a_number() {
 
 get_public_ip() {
     local PUBLIC_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
+    create_file "$PUBLIC_IP" "$SCRIPT_DIR/ip"
     echo "$PUBLIC_IP"
 }
 
@@ -330,8 +331,6 @@ install__pm2() {
 
 install() {
     if ! [ $DEBUG = true ]; then
-        echo
-    else
         install__git
         install__bind
         install__nodejs
@@ -342,8 +341,6 @@ install() {
 
 server__stop() {
     if ! [ $DEBUG = true ]; then
-        echo
-    else
         service bind9 stop
         service nginx stop
         pm2_apps__stop
@@ -352,8 +349,6 @@ server__stop() {
 
 server__restart() {
     if ! [ $DEBUG = true ]; then
-        echo
-    else
         service bind9 restart
         service nginx restart
         pm2_apps__restart
@@ -362,8 +357,6 @@ server__restart() {
 
 server__start() {
     if ! [ $DEBUG = true ]; then
-        echo
-    else
         service bind9 start
         service nginx start
         pm2_apps__start
