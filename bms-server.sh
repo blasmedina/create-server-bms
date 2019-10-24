@@ -192,7 +192,7 @@ create_app_test__package() {
 {
     "name": "${NAME_APP}",
     "version": "0.1.0",
-    "description": "",
+    "description": "App test",
     "main": "./src/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -221,7 +221,7 @@ module.exports = {
         // instances: "max",
         env: {
             "POST": ${PORT_APP},
-            "HOSTNAME": "::"
+            "HOSTNAME": "::",
             "NODE_ENV": "production",
         }
     }]
