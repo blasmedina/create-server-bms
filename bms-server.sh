@@ -66,7 +66,6 @@ count_number_of_digits_in_a_number() {
 
 get_public_ip() {
     local PUBLIC_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
-    create_file "$PUBLIC_IP" "$SCRIPT_DIR/ip"
     echo "$PUBLIC_IP"
 }
 
@@ -96,6 +95,7 @@ _acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_01}"
 _acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_02}"
 EOF
 )
+    create_file "$IP" "$SCRIPT_DIR/ip"
     create_file "${CONTENT}" "${PATH_BIND_ZONES}/${DOMAIN}.db"
 }
 
