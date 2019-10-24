@@ -297,6 +297,108 @@ modo_debug() {
     fi
 }
 
+install__git() {
+    if ! command_exists git; then
+        sudo apt install -y git
+    fi
+}
+
+install__bind() {
+    if ! command_exists bind9; then
+        sudo apt install -y bind9
+    fi
+}
+
+install__nginx() {
+    if ! command_exists git; then
+        sudo apt install -y nginx
+    fi
+}
+
+install__nodejs() {
+    if ! command_exists nodejs; then
+        curl -sL https://deb.nodesource.com/setup_10.x | bash -
+        sudo apt install -y nodejs
+    fi
+}
+
+install__pm2() {
+    if ! command_exists pm2; then
+        sudo npm install --global pm2
+    fi
+}
+
+install() {
+    if ! [ $DEBUG = true ]; then
+        echo
+    else
+        install__git
+        install__bind
+        install__nodejs
+        install__nginx
+        install__pm2
+    fi
+}
+
+server__stop() {
+    if ! [ $DEBUG = true ]; then
+        echo
+    else
+        service bind9 stop
+        service nginx stop
+        pm2_apps__stop
+    fi
+}
+
+server__restart() {
+    if ! [ $DEBUG = true ]; then
+        echo
+    else
+        service bind9 restart
+        service nginx restart
+        pm2_apps__restart
+    fi
+}
+
+server__start() {
+    if ! [ $DEBUG = true ]; then
+        echo
+    else
+        service bind9 start
+        service nginx start
+        pm2_apps__start
+    fi
+}
+
+pm2_apps__stop() {
+    pm2 stop all
+}
+
+pm2_apps__restart() {
+    pm2 stop restart
+} 
+
+pm2_apps__start() {
+    for FOLDER in $PATH_APPS/*; do
+        if [ -d "$FOLDER" ]; then
+            local APP_NAME="$(basename "$FOLDER")"
+            local FILE="${FOLDER}/index.js"
+            if [ -f "$FILE" ]; then
+                echo "pm2 start '${APP_NAME}' PATH:${FOLDER}"
+                cd $FOLDER
+                if [ -f "${FOLDER}/ecosystem.config.js" ]; then
+                    pm2 start
+                else
+                    pm2 start $d/index.js --name $APP_NAME --watch
+                fi
+                cd $SCRIPT_DIR
+            else
+                echo "not found ${FILE}"
+            fi
+        fi
+    done
+}
+
 main() {
     local DEBUG=true
     local SCRIPT_DIR=$(pwd)
@@ -318,10 +420,13 @@ EOF
 )
     setup_color
     modo_debug
+    install
+    server__stop
     config_bind
     config_nginx
     clear_path_apps
     create_apps_test 2
+    server__start
 }
 
 main "$@"
