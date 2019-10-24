@@ -76,7 +76,7 @@ get_public_ip() {
 get_serial() {
     local HOURS=$(date '+%H')
     local MINUTES=$(date '+%M')
-    local SERIAL=$(( $HOURS * $MINUTES ))
+    local SERIAL=$(( 99 * ($HOURS * 100 + $MINUTES) / (23*100+59) ))
     echo "$SERIAL"
 }
 
