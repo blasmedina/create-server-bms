@@ -225,7 +225,9 @@ EOF
 
 install_dependencies() {
     local PATH_APP=$1
-    cd $PATH_APP && npm i
+    if ! [ $DEBUG = true ]; then
+        cd $PATH_APP && npm i
+    fi
 }
 
 create_app_test() {
