@@ -33,7 +33,7 @@ create_file() {
     local CONTENT=$1
     local PATH_FILE=$2
     local NO_DEBUG=$3
-    if ! [ $DEBUG = true ]; then
+    if [ $DEBUG = false ]; then
         local DIR_FILE="$(dirname -- $PATH_FILE)"
         if ! [[ -d "$DIR_FILE" ]]; then
             mkdir -p $DIR_FILE
@@ -49,7 +49,7 @@ create_file() {
 create_link_symbolic() {
     local ORIGIN_PATH=$1
     local DESTINATION_PATH=$2
-    if ! [ $DEBUG = true ]; then
+    if [ $DEBUG = false ]; then
         ln -s $ORIGIN_PATH $DESTINATION_PATH
     fi
 }
@@ -226,7 +226,7 @@ EOF
 
 install_dependencies() {
     local PATH_APP=$1
-    if ! [ $DEBUG = true ]; then
+    if [ $DEBUG = false ]; then
         cd $PATH_APP && npm i
     fi
 }
@@ -285,16 +285,20 @@ create_apps_test() {
 }
 
 clear_path_apps() {
-    if ! [ $DEBUG = true ]; then
+    if [ $DEBUG = false ]; then
         rm -rf $PATH_APPS
     fi
 }
 
 modo_debug() {
-    if ! [ $DEBUG = true ]; then
-        echo
-    else
-        echo "${YELLOW}** MODO DEBUG **${RESET}"
+    if [ $DEBUG = true ]; then
+        cat <<-EOF
+${YELLOW}
+    ****************
+    ** MODO DEBUG **
+    ****************
+${RESET}
+EOF
     fi
 }
 
@@ -330,7 +334,7 @@ install__pm2() {
 }
 
 install() {
-    if ! [ $DEBUG = true ]; then
+    if [ $DEBUG = false ]; then
         install__git
         install__bind
         install__nodejs
@@ -340,7 +344,7 @@ install() {
 }
 
 server__stop() {
-    if ! [ $DEBUG = true ]; then
+    if [ $DEBUG = false ]; then
         service bind9 stop
         service nginx stop
         pm2_apps__stop
@@ -348,7 +352,7 @@ server__stop() {
 }
 
 server__restart() {
-    if ! [ $DEBUG = true ]; then
+    if [ $DEBUG = false ]; then
         service bind9 restart
         service nginx restart
         pm2_apps__restart
@@ -356,7 +360,7 @@ server__restart() {
 }
 
 server__start() {
-    if ! [ $DEBUG = true ]; then
+    if [ $DEBUG = false ]; then
         service bind9 start
         service nginx start
         pm2_apps__start
