@@ -391,7 +391,7 @@ pm2_apps__start() {
     for FOLDER in $PATH_APPS/*; do
         if [ -d "$FOLDER" ]; then
             local APP_NAME="$(basename "$FOLDER")"
-            local FILE="${FOLDER}/index.js"
+            local FILE="${FOLDER}/src/index.js"
             if [ -f "$FILE" ]; then
                 echo "pm2 start '${APP_NAME}' PATH:${FOLDER}"
                 cd $FOLDER
