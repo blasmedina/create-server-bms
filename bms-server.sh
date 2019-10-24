@@ -206,7 +206,7 @@ create_app_test__package() {
 }
 EOF
 )
-    create_file "${CONTENT}" "${PATH_APP}/package.js"
+    create_file "${CONTENT}" "${PATH_APP}/package.json"
 }
 
 create_app_test__ecosystem() {
@@ -408,6 +408,16 @@ pm2_apps__start() {
     done
 }
 
+clear_all() {
+    if [ $DEBUG = false ]; then
+        echo "${BLUE}clear all${RESET}"
+        rm -R $PATH_APPS
+        rm -R $PATH_NGINX_APPS
+        rm -R $PATH_BIND_ZONES
+        rm "$PATH_NGINX_SITES_ENABLED/*"
+    fi
+}
+
 main() {
     local DEBUG=false
     local SCRIPT_DIR=$(pwd)
@@ -431,9 +441,9 @@ EOF
     modo_debug
     install
     # server__stop
+    clear_all
     config_bind
     config_nginx
-    clear_path_apps
     create_apps_test 2
     server__start
 }
