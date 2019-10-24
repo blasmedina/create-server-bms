@@ -159,8 +159,8 @@ config_nginx() {
 
 create_app_test__index() {
     local PATH_APP=$1
-    local PORT_APP=$2
-    local NAME_APP="$(basename -- $PATH_APP)"
+    local NAME_APP=$2
+    local PORT_APP=$3
     local CONTENT=$(cat <<-EOF
 require('dotenv').config();
 const http = require('http');
