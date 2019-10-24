@@ -430,7 +430,7 @@ EOF
     setup_color
     modo_debug
     install
-    server__stop
+    # server__stop
     config_bind
     config_nginx
     clear_path_apps
