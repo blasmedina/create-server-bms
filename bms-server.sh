@@ -414,7 +414,7 @@ clear_all() {
         rm -R $PATH_APPS
         rm -R $PATH_NGINX_APPS
         rm -R $PATH_BIND_ZONES
-        rm "$PATH_NGINX_SITES_ENABLED/*"
+        rm $PATH_NGINX_SITES_ENABLED/*
     fi
 }
 
