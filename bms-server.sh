@@ -348,7 +348,7 @@ install() {
         install__nodejs
         install__nginx
         install__pm2
-        sleep 2
+        sleep 5
     fi
 }
 
@@ -358,6 +358,7 @@ server__stop() {
         service bind9 stop
         service nginx stop
         pm2_apps__stop
+        sleep 5
     fi
 }
 
@@ -379,7 +380,7 @@ server__start() {
 }
 
 pm2_apps__stop() {
-    pm2 stop all
+    pm2 delete all
 }
 
 pm2_apps__restart() {
