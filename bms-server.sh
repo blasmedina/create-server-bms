@@ -104,42 +104,6 @@ EOF
     create_file "${CONTENT}" "${PATH_BIND_ZONES}/${DOMAIN}.db"
 }
 
-config_bind__zone_v2() {
-    echo "${BLUE}CONFIG BIND${RESET}"
-    local DATE=$(date '+%Y%m%d')
-    local IP=$(get_public_ip)
-    local SERIAL="${DATE}05"
-    local HASH_01=$(head -n 1 $PWD/_acme-challenge-01.txt)
-    local HASH_02=$(head -n 1 $PWD/_acme-challenge-02.txt)
-    local CONTENT=$(cat <<-EOF
-\$ORIGIN blasmedina.cl
-\$ttl 1h
-@  IN      SOA     $HOSTNAME. root.${DOMAIN}. (
-                        ${SERIAL} ; serial
-                        3h ; time to refresh
-                        1h ; time to retry
-                        1w ; time to expire
-                        1h ; minimum TTL
-            )
-; Name Servers
-@                           IN      NS      ${DOMAIN}.
-@                           IN      NS      secundario.nic.cl.
-@                           IN      NS      ns1.${DOMAIN}.
-@                           IN      NS      ns2.${DOMAIN}.
-@                           IN      NS      ns3.${DOMAIN}.
-; A Records
-@                                   IN      A       ${IP}
-; CNAME Records
-www                         IN      CNAME   @
-; TXT
-_acme-challenge.${DOMAIN}.  1       IN      TXT     "${HASH_01}"
-_acme-challenge.${DOMAIN}.  1       IN      TXT     "${HASH_02}"
-EOF
-)
-    create_file "$IP" "$SCRIPT_DIR/ip"
-    create_file "${CONTENT}" "${PATH_BIND_ZONES}/${DOMAIN}.db"
-}
-
 config_bind__named() {
     local CONTENT=$(cat <<-EOF
 zone "${DOMAIN}" {
@@ -152,7 +116,7 @@ EOF
 }
 
 config_bind() {
-    config_bind__zone_v2
+    config_bind__zone
     config_bind__named
 }
 
@@ -195,7 +159,7 @@ EOF
 }
 
 config_nginx() {
-    # config_nginx__site_blasmedina
+    config_nginx__site_blasmedina
     config_nginx__site_www_blasmedina
 }
 
