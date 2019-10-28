@@ -240,6 +240,7 @@ config_nginx__site_blasmedina() {
 server {
     listen 80;
     server_name ${DOMAIN};
+
     # rewrite ^(.*) http://${DOMAIN}\$1 permanent;
     return 301 \$scheme://www.${DOMAIN}\$request_uri;
 }
@@ -254,9 +255,12 @@ config_nginx__site_www_blasmedina() {
     local CONTENT=$(cat <<-EOF
 server {
     listen 80;
+    listen 443 ssl;
+
     server_name ${NAME_SITE};
-    root /var/www/html;
-    # index index.html index.htm index.nginx-debian.html;
+
+    ssl_certificate ${SCRIPT_DIR}/certs/certificate.crt;
+    ssl_certificate_key ${SCRIPT_DIR}/certs/private.crt;
     
     location ^~ / {
         proxy_pass http://localhost:3000;
@@ -274,9 +278,8 @@ config_nginx__site_app_blasmedina() {
     local CONTENT=$(cat <<-EOF
 server {
     listen 80;
+    
     server_name ${NAME_SITE};
-    root /var/www/html;
-    # index index.html index.htm index.nginx-debian.html;
 
     include /etc/nginx/default.d/*.conf;
 
