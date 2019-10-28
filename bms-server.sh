@@ -104,6 +104,38 @@ EOF
     create_file "${CONTENT}" "${PATH_BIND_ZONES}/${DOMAIN}.db"
 }
 
+config_bind__zone_v2() {
+    echo "${BLUE}CONFIG BIND${RESET}"
+    local DATE=$(date '+%Y%m%d')
+    local IP=$(get_public_ip)
+    local SERIAL="${DATE}00"
+    local HOUR=$((60 * 60))
+    local DAY=$(($HOUR * 24))
+    local WEEK=$(($DAY * 7))
+    local HASH_01=$(head -n 1 $PWD/_acme-challenge-01.txt)
+    local HASH_02=$(head -n 1 $PWD/_acme-challenge-02.txt)
+    local CONTENT=$(cat <<-EOF
+\$ORIGIN ${DOMAIN}.
+@  IN      SOA     $HOSTNAME. root.${DOMAIN}. (
+                        ${SERIAL} ; serial
+                        $(($HOUR * 3)) ; time to refresh
+                        $HOUR ; time to retry
+                        $WEEK ; time to expire
+                        $HOUR ) ; minimum TTL
+            IN      NS      ns1.${DOMAIN}.
+            IN      A       ${IP}
+ns1         IN      A       ${IP}
+www         IN      A       ${IP}
+;
+;; https://www.sslforfree.com/
+_acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_01}"
+_acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_02}"
+EOF
+)
+    create_file "$IP" "$SCRIPT_DIR/ip"
+    create_file "${CONTENT}" "${PATH_BIND_ZONES}/${DOMAIN}.db"
+}
+
 config_bind__named() {
     local CONTENT=$(cat <<-EOF
 zone "${DOMAIN}" {
@@ -116,7 +148,7 @@ EOF
 }
 
 config_bind() {
-    config_bind__zone
+    config_bind__zone_v2
     config_bind__named
 }
 
@@ -358,16 +390,15 @@ server__stop() {
         echo "${BLUE}SERVER STOP${RESET}"
         service bind9 stop
         service nginx stop
-        pm2_apps__stop
         sleep 5
     fi
 }
 
-server__restart() {
+server__reload() {
     if [ $DEBUG = false ]; then
-        service bind9 restart
-        service nginx restart
-        pm2_apps__restart
+        echo "${BLUE}SERVER RELOAD${RESET}"
+        service bind9 reload
+        service nginx reload
     fi
 }
 
@@ -376,7 +407,6 @@ server__start() {
         echo "${BLUE}SERVER START${RESET}"
         service bind9 start
         service nginx start
-        pm2_apps__start
     fi
 }
 
@@ -453,8 +483,9 @@ EOF
     clear_all
     config_bind
     config_nginx
+    server__reload
     create_apps_test 2
-    server__start
+    pm2_apps__start
 }
 
 main "$@"
