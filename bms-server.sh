@@ -110,7 +110,7 @@ config_bind__zone_v2() {
     echo "${BLUE}CONFIG BIND${RESET}"
     local DATE=$(date '+%Y%m%d')
     local IP=$(get_public_ip)
-    local SERIAL="${DATE}03"
+    local SERIAL="${DATE}05"
     local HOUR=$((60 * 60))
     local DAY=$(($HOUR * 24))
     local WEEK=$(($DAY * 7))
@@ -124,7 +124,9 @@ config_bind__zone_v2() {
                         $HOUR ; time to retry
                         $WEEK ; time to expire
                         $HOUR ) ; minimum TTL
+; main domain name servers
             IN      NS      ns1.${DOMAIN}.
+; A records for name servers above
             IN      A       ${IP}
 ns1         IN      A       ${IP}
 www         IN      CNAME   ${DOMAIN}.
@@ -351,7 +353,7 @@ module.exports = {
     apps: [{
         name: "${NAME_APP}",
         script: "./src/index.js",
-        instances: "max",
+        // instances: "max",
         env: {
             "POST": ${PORT_APP},
             "HOSTNAME": "::",
@@ -579,7 +581,7 @@ EOF
     config_bind
     config_nginx
     server__reload
-    create_apps_test 2
+    create_apps_test 5
     pm2_apps__start
 }
 
