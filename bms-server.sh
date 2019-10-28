@@ -356,7 +356,7 @@ module.exports = {
         // instances: "max",
         env: {
             "POST": ${PORT_APP},
-            "HOSTNAME": "::",
+            // "HOSTNAME": "::",
             "NODE_ENV": "production",
         }
     }]
