@@ -580,8 +580,8 @@ EOF
     clear_all
     config_bind
     config_nginx
-    server__reload
     create_apps_test 5
+    server__reload
     pm2_apps__start
 }
 
