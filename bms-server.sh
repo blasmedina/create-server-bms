@@ -36,9 +36,11 @@ create_file() {
     if [ $DEBUG = false ]; then
         local DIR_FILE="$(dirname -- $PATH_FILE)"
         if ! [[ -d "$DIR_FILE" ]]; then
+            echo "${GREEN}CREATE: \"${DIR_FILE}\"${RESET}"
             mkdir -p $DIR_FILE
         fi
         if [[ -f "$PATH_FILE" ]]; then
+            echo "${GREEN}REMOVE: \"${PATH_FILE}\"${RESET}"
             rm $PATH_FILE
         fi
         echo "${GREEN}SAVE: \"${PATH_FILE}\"${RESET}"
@@ -101,7 +103,7 @@ _acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_02}"
 EOF
 )
     create_file "$IP" "$SCRIPT_DIR/ip"
-    create_file "${CONTENT}" "${PATH_BIND_ZONES}/${DOMAIN}.db"
+    create_file "${CONTENT}" "/etc/bind/zones/${DOMAIN}.db"
 }
 
 config_bind__zone_v2() {
@@ -133,18 +135,18 @@ _acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_02}"
 EOF
 )
     create_file "$IP" "$SCRIPT_DIR/ip"
-    create_file "${CONTENT}" "${PATH_BIND_ZONES}/${DOMAIN}.db"
+    create_file "${CONTENT}" "/etc/bind/zones/${DOMAIN}.db"
 }
 
 config_bind__named() {
     local CONTENT=$(cat <<-EOF
 zone "${DOMAIN}" {
     type master;
-    file "${PATH_BIND_ZONES}/${DOMAIN}.db";
+    file "/etc/bind/zones/${DOMAIN}.db";
 };
 EOF
 )
-    create_file "${CONTENT}" "${PATH_BIND}/named.conf.local"
+    create_file "${CONTENT}" "/etc/bind/named.conf.local"
 }
 
 config_bind() {
@@ -152,10 +154,85 @@ config_bind() {
     config_bind__named
 }
 
+config_nginx__base() {
+    local CONTENT=$(cat <<-EOF
+user www-data;
+worker_processes 1;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+    worker_connections 512;
+    use epoll;
+    multi_accept on;
+}
+
+http {
+    ##
+    # Basic Settings
+    ##
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    server_tokens off;
+
+    client_body_buffer_size         128k;
+    client_max_body_size            10m;
+    client_header_buffer_size       1k;
+    large_client_header_buffers     4 4k;
+    output_buffers                  1 32k;
+    postpone_output                 1460;
+
+    client_header_timeout           3m;
+    client_body_timeout             3m;
+    send_timeout                    3m;
+
+    open_file_cache max=1000 inactive=20s;
+    open_file_cache_valid 30s;
+    open_file_cache_min_uses 5;
+    open_file_cache_errors off;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    ##
+    # SSL Settings
+    ##
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+    ssl_prefer_server_ciphers on;
+
+    ##
+    # Logging Settings
+    # [ debug | info | notice | warn | error | crit | alert | emerg ] 
+    ##
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log warn;
+
+    ##
+    # Gzip Settings
+    ##
+    gzip on;
+    gzip_min_length  1000;
+    gzip_buffers     4 4k;
+    gzip_types       text/html application/x-javascript text/css application/javascript text/javascript text/plain text/xml application/json application/vnd.ms-fontobject application/x-font-opentype application/x-font-truetype application/x-font-ttf application/xml font/eot font/opentype font/otf image/svg+xml image/vnd.microsoft.icon;
+    gzip_disable "MSIE [1-6]\.";
+
+    ##
+    # Virtual Host Configs
+    ##
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
+EOF
+)
+    create_file "${CONTENT}" "/etc/nginx/nginx.conf"
+}
+
 config_nginx__site_blasmedina() {
     echo "${BLUE}CONFIG NGINX${RESET}"
     local NAME_SITE="${DOMAIN}"
-    local PATH_FILE="${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}"
     local CONTENT=$(cat <<-EOF
 server {
     listen 80;
@@ -165,19 +242,19 @@ server {
 }
 EOF
 )
-    create_file "${CONTENT}" "${PATH_FILE}"
-    create_link_symbolic "${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}" "${PATH_NGINX_SITES_ENABLED}/${NAME_SITE}"
+    create_file "${CONTENT}" "/etc/nginx/sites-available/${NAME_SITE}"
+    create_link_symbolic "/etc/nginx/sites-available/${NAME_SITE}" "/etc/nginx/sites-enabled/${NAME_SITE}"
 }
 
 config_nginx__site_www_blasmedina() {
     local NAME_SITE="www.${DOMAIN}"
-    local PATH_FILE="${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}"
     local CONTENT=$(cat <<-EOF
 server {
     listen 80;
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
     server_name ${NAME_SITE};
+    root /var/www/html;
+    access_log   /var/log/nginx.access_log  main;
+    # index index.html index.htm index.nginx-debian.html;
     
     location ^~ / {
         proxy_pass http://localhost:3000;
@@ -186,13 +263,37 @@ ${CONTENT_PROXY}
 }
 EOF
 )
-    create_file "${CONTENT}" "${PATH_FILE}"
-    create_link_symbolic "${PATH_NGINX_SITES_AVAILABLE}/${NAME_SITE}" "${PATH_NGINX_SITES_ENABLED}/${NAME_SITE}"
+    create_file "${CONTENT}" "/etc/nginx/sites-available/${NAME_SITE}"
+    create_link_symbolic "/etc/nginx/sites-available/${NAME_SITE}" "/etc/nginx/sites-enabled/${NAME_SITE}"
+}
+
+config_nginx__site_app_blasmedina() {
+    local NAME_SITE="apps.${DOMAIN}"
+    local CONTENT=$(cat <<-EOF
+server {
+    listen 80;
+    server_name ${NAME_SITE};
+    root /var/www/html;
+    # index index.html index.htm index.nginx-debian.html;
+
+    include ${PATH_NGINX_APPS}/*.conf;
+
+    location ^~ / {
+        proxy_pass http://localhost:3001;
+${CONTENT_PROXY}
+    }
+}
+EOF
+)
+    content_to_file "${CONTENT}" "/etc/nginx/sites-available/${NAME_SITE}"
+    create_link_symbolic "/etc/nginx/sites-available/${NAME_SITE}" "/etc/nginx/sites-enabled/${NAME_SITE}"
 }
 
 config_nginx() {
+    config_nginx__base
     config_nginx__site_blasmedina
     config_nginx__site_www_blasmedina
+    config_nginx__site_app_blasmedina
 }
 
 create_app_test__index() {
@@ -253,7 +354,7 @@ module.exports = {
         // instances: "max",
         env: {
             "POST": ${PORT_APP},
-            "HOSTNAME": "::",
+            // "HOSTNAME": "::",
             "NODE_ENV": "production",
         }
     }]
@@ -283,7 +384,7 @@ create_app_test() {
 config_nginx_app() {
     local NAME_APP=$1
     local PORT_APP=$2
-    local PATH_NGINX_APP="${PATH_NGINX_APPS}/${NAME_APP}.conf"
+    local PATH_NGINX_APP="/etc/nginx/default.d/${NAME_APP}.conf"
     local CONTENT=$(cat <<-EOF
 location ^~ /${NAME_APP} {
     proxy_pass http://localhost:${PORT_APP};
@@ -445,14 +546,14 @@ clear_all() {
         if [ -d "$PATH_APPS" ]; then
             rm -rf $PATH_APPS
         fi
-        if [ -d "$PATH_NGINX_APPS" ]; then
-            rm -rf $PATH_NGINX_APPS
+        if [ -d "/etc/nginx/default.d" ]; then
+            rm -rf /etc/nginx/default.d
         fi
-        if [ -d "$PATH_BIND_ZONES" ]; then
-            rm -rf $PATH_BIND_ZONES
+        if [ -d "/etc/bind/zones" ]; then
+            rm -rf /etc/bind/zones
         fi
-        if [ -d "$PATH_NGINX_SITES_ENABLED" ]; then
-            rm $PATH_NGINX_SITES_ENABLED/*
+        if [ -d "/etc/nginx/sites-enabled" ]; then
+            rm /etc/nginx/sites-enabled/*
         fi
     fi
 }
@@ -461,12 +562,6 @@ main() {
     local DEBUG=false
     local SCRIPT_DIR=$(pwd)
     local DOMAIN="blasmedina.cl"
-    local PATH_BIND="/etc/bind"
-    local PATH_BIND_ZONES="${PATH_BIND}/zones"
-    local PATH_NGINX="/etc/nginx"
-    local PATH_NGINX_APPS="${PATH_NGINX}/default.d"
-    local PATH_NGINX_SITES_AVAILABLE="${PATH_NGINX}/sites-available"
-    local PATH_NGINX_SITES_ENABLED="${PATH_NGINX}/sites-enabled"
     local PATH_APPS="/data"
     local CONTENT_PROXY=$(cat <<-EOF
         proxy_http_version 1.1;
