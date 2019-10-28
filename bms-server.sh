@@ -253,7 +253,6 @@ server {
     listen 80;
     server_name ${NAME_SITE};
     root /var/www/html;
-    access_log   /var/log/nginx.access_log  main;
     # index index.html index.htm index.nginx-debian.html;
     
     location ^~ / {
