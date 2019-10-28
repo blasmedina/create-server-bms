@@ -110,7 +110,7 @@ config_bind__zone_v2() {
     echo "${BLUE}CONFIG BIND${RESET}"
     local DATE=$(date '+%Y%m%d')
     local IP=$(get_public_ip)
-    local SERIAL="${DATE}00"
+    local SERIAL="${DATE}01"
     local HOUR=$((60 * 60))
     local DAY=$(($HOUR * 24))
     local WEEK=$(($DAY * 7))
@@ -128,6 +128,7 @@ config_bind__zone_v2() {
             IN      A       ${IP}
 ns1         IN      A       ${IP}
 www         IN      A       ${IP}
+apps        IN      A       ${IP}
 ;
 ;; https://www.sslforfree.com/
 _acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_01}"
