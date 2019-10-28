@@ -276,7 +276,7 @@ server {
     root /var/www/html;
     # index index.html index.htm index.nginx-debian.html;
 
-    include ${PATH_NGINX_APPS}/*.conf;
+    include /etc/nginx/default.d/*.conf;
 
     location ^~ / {
         proxy_pass http://localhost:3001;
@@ -351,10 +351,10 @@ module.exports = {
     apps: [{
         name: "${NAME_APP}",
         script: "./src/index.js",
-        // instances: "max",
+        instances: "max",
         env: {
             "POST": ${PORT_APP},
-            // "HOSTNAME": "::",
+            "HOSTNAME": "::",
             "NODE_ENV": "production",
         }
     }]
