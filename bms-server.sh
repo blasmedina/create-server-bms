@@ -260,7 +260,7 @@ server {
     server_name ${NAME_SITE};
 
     ssl_certificate ${SCRIPT_DIR}/certs/certificate.crt;
-    ssl_certificate_key ${SCRIPT_DIR}/certs/private.crt;
+    ssl_certificate_key ${SCRIPT_DIR}/certs/private.key;
     
     location ^~ / {
         proxy_pass http://localhost:3000;
@@ -278,7 +278,7 @@ config_nginx__site_app_blasmedina() {
     local CONTENT=$(cat <<-EOF
 server {
     listen 80;
-    
+
     server_name ${NAME_SITE};
 
     include /etc/nginx/default.d/*.conf;
