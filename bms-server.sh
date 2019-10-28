@@ -285,7 +285,7 @@ ${CONTENT_PROXY}
 }
 EOF
 )
-    content_to_file "${CONTENT}" "/etc/nginx/sites-available/${NAME_SITE}"
+    create_file "${CONTENT}" "/etc/nginx/sites-available/${NAME_SITE}"
     create_link_symbolic "/etc/nginx/sites-available/${NAME_SITE}" "/etc/nginx/sites-enabled/${NAME_SITE}"
 }
 
