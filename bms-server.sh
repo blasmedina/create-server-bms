@@ -594,7 +594,7 @@ EOF
 }
 
 # main "$@"
-
-while read p; do
-  echo "$p"
-done <_acme-challenge.txt
+echo
+while read line; do
+    echo $line;
+done < $SCRIPT_DIR/_acme-challenge.txt
