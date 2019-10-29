@@ -347,6 +347,7 @@ EOF
 }
 
 install_dependencies() {
+    echo "${BLUE}INSTALL DEPENDENCIES${RESET}"
     local PATH_APP=$1
     if [ $DEBUG = false ]; then
         cd $PATH_APP && npm i
@@ -553,6 +554,7 @@ install_apps__process() {
 }
 
 install_apps() {
+    echo "${BLUE}INSTALL APPS${RESET}"
     while read -r line; do
         install_apps__process $line
     done < "apps.txt"
