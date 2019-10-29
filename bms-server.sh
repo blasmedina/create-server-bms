@@ -593,4 +593,8 @@ EOF
     pm2_apps__start
 }
 
-main "$@"
+# main "$@"
+
+while read p; do
+  echo "$p"
+done <_acme-challenge.txt
