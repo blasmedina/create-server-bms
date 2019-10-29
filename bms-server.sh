@@ -264,7 +264,11 @@ server {
     
     location ^~ / {
         proxy_pass http://localhost:3000;
-${CONTENT_PROXY}
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
     }
 }
 EOF
@@ -273,19 +277,27 @@ EOF
     create_link_symbolic "/etc/nginx/sites-available/${NAME_SITE}" "/etc/nginx/sites-enabled/${NAME_SITE}"
 }
 
-config_nginx__site_app_blasmedina() {
+config_nginx__site_apps_blasmedina() {
     local NAME_SITE="apps.${DOMAIN}"
     local CONTENT=$(cat <<-EOF
 server {
     listen 80;
+    listen 443 ssl;
 
     server_name ${NAME_SITE};
+
+    ssl_certificate ${SCRIPT_DIR}/certs/certificate.crt;
+    ssl_certificate_key ${SCRIPT_DIR}/certs/private.key;
 
     include /etc/nginx/default.d/*.conf;
 
     location ^~ / {
         proxy_pass http://localhost:3001;
-${CONTENT_PROXY}
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
     }
 }
 EOF
@@ -298,7 +310,7 @@ config_nginx() {
     config_nginx__base
     config_nginx__site_blasmedina
     config_nginx__site_www_blasmedina
-    config_nginx__site_app_blasmedina
+    config_nginx__site_apps_blasmedina
 }
 
 create_app_test__index() {
