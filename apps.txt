@@ -1,0 +1,2 @@
+repositorio1#nombre1
+repositorio2#nombre2

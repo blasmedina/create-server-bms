@@ -495,7 +495,6 @@ install() {
         install__nodejs
         install__nginx
         install__pm2
-        sleep 5
     fi
 }
 
@@ -504,7 +503,6 @@ server__stop() {
         echo "${BLUE}SERVER STOP${RESET}"
         service bind9 stop
         service nginx stop
-        sleep 5
     fi
 }
 
@@ -522,17 +520,22 @@ server__start() {
         service bind9 start
         service nginx start
     fi
+    server__reload
 }
 
 pm2_apps__stop() {
-    pm2 delete all
+    echo "${BLUE}APPs STOP${RESET}"
+    sudo pm2 delete all
 }
 
-pm2_apps__restart() {
-    pm2 stop restart
+pm2_apps__reload() {
+    echo "${BLUE}APPs RELOAD${RESET}"
+    pm2_apps__stop
+    pm2_apps__start
 } 
 
 pm2_apps__start() {
+    echo "${BLUE}APPs START${RESET}"
     for FOLDER in $PATH_APPS/*; do
         if [ -d "$FOLDER" ]; then
             local APP_NAME="$(basename "$FOLDER")"
@@ -571,6 +574,21 @@ clear_all() {
     fi
 }
 
+install_apps__process() {
+    local LINE=$1
+    local OIFS="$IFS"
+    IFS='#' read -a array <<< "${line}"
+    IFS="$OIFS"
+    echo "git clone ${array[0]} ${PATH_APPS}/${array[1]}"
+}
+
+install_apps() {
+    while read -r line; do
+        install_apps__process $line
+    done < "apps.txt"
+    install_apps__process $line
+}
+
 main() {
     local DEBUG=false
     local SCRIPT_DIR=$(pwd)
@@ -587,13 +605,15 @@ EOF
     setup_color
     modo_debug
     install
-    # server__stop
+    server__stop
     clear_all
     config_bind
     config_nginx
+    install_apps
     create_apps_test 3
-    server__reload
-    pm2_apps__start
+    server__start
+    pm2_apps__reload
+    # install_apps
 }
 
 main "$@"
