@@ -115,10 +115,10 @@ config_bind__zone_v2() {
     local DAY=$(($HOUR * 24))
     local WEEK=$(($DAY * 7))
 
-    while read line; do
+    while IFS = read -r line; do
         ACME_CHALLENGE="${ACME_CHALLENGE}
 _acme-challenge.${DOMAIN}.  1   IN      TXT     \"${line}\""
-    done < _acme-challenge.txt
+    done < "_acme-challenge.txt"
 
     local CONTENT=$(cat <<-EOF
 \$ORIGIN ${DOMAIN}.
