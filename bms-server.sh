@@ -594,7 +594,11 @@ EOF
 }
 
 # main "$@"
+# 
+$ACME_CHALLENGE=""
 echo
 while read line; do
-    echo $line;
+    ACME_CHALLENGE+="_acme-challenge.  1   IN      TXT     "${line}""
 done < _acme-challenge.txt
+echo "*****"
+echo "${ACME_CHALLENGE}"
