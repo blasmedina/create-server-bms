@@ -79,37 +79,6 @@ config_bind__zone() {
     echo "${BLUE}CONFIG BIND${RESET}"
     local DATE=$(date '+%Y%m%d')
     local IP=$(get_public_ip)
-    local SERIAL="${DATE}00"
-    local HOUR=$((60 * 60))
-    local DAY=$(($HOUR * 24))
-    local WEEK=$(($DAY * 7))
-    local HASH_01=$(head -n 1 $PWD/_acme-challenge-01.txt)
-    local HASH_02=$(head -n 1 $PWD/_acme-challenge-02.txt)
-    local CONTENT=$(cat <<-EOF
-\$ttl $HOUR
-${DOMAIN}.  IN      SOA     $HOSTNAME. root.${DOMAIN}. (
-                        ${SERIAL} ; serial
-                        $(($HOUR * 3)) ; time to refresh
-                        $HOUR ; time to retry
-                        $WEEK ; time to expire
-                        $DAY ; minimum TTL
-            )
-@                                   IN      NS      ${DOMAIN}.
-${DOMAIN}.                      IN      A       ${IP}
-ns1.${DOMAIN}.                  IN      A       ${IP}
-www                                 IN      CNAME   ${DOMAIN}.
-_acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_01}"
-_acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_02}"
-EOF
-)
-    create_file "$IP" "$SCRIPT_DIR/ip"
-    create_file "${CONTENT}" "/etc/bind/zones/${DOMAIN}.db"
-}
-
-config_bind__zone_v2() {
-    echo "${BLUE}CONFIG BIND${RESET}"
-    local DATE=$(date '+%Y%m%d')
-    local IP=$(get_public_ip)
     local SERIAL="${DATE}06"
     local HOUR=$((60 * 60))
     local DAY=$(($HOUR * 24))
@@ -156,7 +125,7 @@ EOF
 }
 
 config_bind() {
-    config_bind__zone_v2
+    config_bind__zone
     config_bind__named
 }
 
@@ -579,7 +548,8 @@ install_apps__process() {
     local OIFS="$IFS"
     IFS='#' read -a array <<< "${line}"
     IFS="$OIFS"
-    echo "git clone ${array[0]} ${PATH_APPS}/${array[1]}"
+    git clone "${array[0]}" "${PATH_APPS}/${array[1]}"
+    install_dependencies "${PATH_APPS}/${array[1]}"
 }
 
 install_apps() {
@@ -613,7 +583,6 @@ EOF
     create_apps_test 3
     server__start
     pm2_apps__reload
-    # install_apps
 }
 
 main "$@"
