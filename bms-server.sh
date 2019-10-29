@@ -114,8 +114,12 @@ config_bind__zone_v2() {
     local HOUR=$((60 * 60))
     local DAY=$(($HOUR * 24))
     local WEEK=$(($DAY * 7))
-    local HASH_01=$(head -n 1 $PWD/_acme-challenge-01.txt)
-    local HASH_02=$(head -n 1 $PWD/_acme-challenge-02.txt)
+
+    while read line; do
+        ACME_CHALLENGE="${ACME_CHALLENGE}
+_acme-challenge.${DOMAIN}.  1   IN      TXT     \"${line}\""
+    done < _acme-challenge.txt
+
     local CONTENT=$(cat <<-EOF
 \$ORIGIN ${DOMAIN}.
 @  IN      SOA     $HOSTNAME. root.${DOMAIN}. (
@@ -133,8 +137,7 @@ www         IN      CNAME   ${DOMAIN}.
 apps        IN      CNAME   ${DOMAIN}.
 ;
 ;; https://www.sslforfree.com/
-_acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_01}"
-_acme-challenge.${DOMAIN}.  1   IN      TXT     "${HASH_02}"
+${ACME_CHALLENGE}
 EOF
 )
     create_file "$IP" "$SCRIPT_DIR/ip"
@@ -569,7 +572,7 @@ clear_all() {
 }
 
 main() {
-    local DEBUG=false
+    local DEBUG=true
     local SCRIPT_DIR=$(pwd)
     local DOMAIN="blasmedina.cl"
     local PATH_APPS="/data"
@@ -587,18 +590,10 @@ EOF
     # server__stop
     clear_all
     config_bind
-    config_nginx
-    create_apps_test 3
-    server__reload
-    pm2_apps__start
+    # config_nginx
+    # create_apps_test 3
+    # server__reload
+    # pm2_apps__start
 }
 
-# main "$@"
-# 
-echo
-while read line; do
-    ACME_CHALLENGE="${ACME_CHALLENGE}
-_acme-challenge.  1   IN      TXT     \"${line}\""
-done < _acme-challenge.txt
-echo "*****"
-echo "${ACME_CHALLENGE}"
+main "$@"
