@@ -114,7 +114,6 @@ config_bind__zone_v2() {
     local HOUR=$((60 * 60))
     local DAY=$(($HOUR * 24))
     local WEEK=$(($DAY * 7))
-
     while read -r line; do
         ACME_CHALLENGE="${ACME_CHALLENGE}_acme-challenge.${DOMAIN}.  1   IN      TXT     \"${line}\"
 "
@@ -573,7 +572,7 @@ clear_all() {
 }
 
 main() {
-    local DEBUG=true
+    local DEBUG=false
     local SCRIPT_DIR=$(pwd)
     local DOMAIN="blasmedina.cl"
     local PATH_APPS="/data"
@@ -591,10 +590,10 @@ EOF
     # server__stop
     clear_all
     config_bind
-    # config_nginx
-    # create_apps_test 3
-    # server__reload
-    # pm2_apps__start
+    config_nginx
+    create_apps_test 3
+    server__reload
+    pm2_apps__start
 }
 
 main "$@"
