@@ -118,7 +118,7 @@ config_bind__zone_v2() {
     while IFS = read -r line; do
         ACME_CHALLENGE="${ACME_CHALLENGE}
 _acme-challenge.${DOMAIN}.  1   IN      TXT     \"${line}\""
-    done < "_acme-challenge.txt"
+    done < _acme-challenge.txt
 
     local CONTENT=$(cat <<-EOF
 \$ORIGIN ${DOMAIN}.
