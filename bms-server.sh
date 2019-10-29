@@ -597,4 +597,4 @@ EOF
 echo
 while read line; do
     echo $line;
-done < $SCRIPT_DIR/_acme-challenge.txt
+done < _acme-challenge.txt
