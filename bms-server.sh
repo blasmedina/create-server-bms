@@ -595,7 +595,6 @@ EOF
 
 # main "$@"
 # 
-$ACME_CHALLENGE=""
 echo
 while read line; do
     ACME_CHALLENGE="$ACME_CHALLENGE\n_acme-challenge.  1   IN      TXT     \"${line}\""
