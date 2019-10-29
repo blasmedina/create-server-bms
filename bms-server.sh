@@ -585,12 +585,12 @@ EOF
 )
     setup_color
     modo_debug
-    # install
+    install
     # server__stop
-    # clear_all
+    clear_all
     config_bind
     config_nginx
-    # create_apps_test 5
+    create_apps_test 3
     server__reload
     pm2_apps__start
 }
