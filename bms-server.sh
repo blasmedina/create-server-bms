@@ -36,11 +36,11 @@ create_file() {
     if [ $DEBUG = false ]; then
         local DIR_FILE="$(dirname -- $PATH_FILE)"
         if ! [[ -d "$DIR_FILE" ]]; then
-            echo "${GREEN}CREATE: \"${DIR_FILE}\"${RESET}"
+            # echo "${GREEN}CREATE: \"${DIR_FILE}\"${RESET}"
             mkdir -p $DIR_FILE
         fi
         if [[ -f "$PATH_FILE" ]]; then
-            echo "${GREEN}REMOVE: \"${PATH_FILE}\"${RESET}"
+            # echo "${GREEN}REMOVE: \"${PATH_FILE}\"${RESET}"
             rm $PATH_FILE
         fi
         echo "${GREEN}SAVE: \"${PATH_FILE}\"${RESET}"
@@ -49,7 +49,7 @@ create_file() {
         echo "${GREEN}SAVE: \"${PATH_FILE}\"${RESET}"
         echo "${BOLD}$CONTENT${RESET}"
     fi
-    echo
+    # echo
 }
 
 create_link_symbolic() {
@@ -233,32 +233,33 @@ EOF
     create_file "${CONTENT}" "/etc/nginx/nginx.conf"
 }
 
-config_nginx__site_blasmedina() {
-    echo "${BLUE}CONFIG NGINX${RESET}"
-    local NAME_SITE="${DOMAIN}"
-    local CONTENT=$(cat <<-EOF
-server {
-    listen 80;
-    server_name ${DOMAIN};
-
-    # rewrite ^(.*) http://${DOMAIN}\$1 permanent;
-    return 301 \$scheme://www.${DOMAIN}\$request_uri;
-}
-EOF
-)
-    create_file "${CONTENT}" "/etc/nginx/sites-available/${NAME_SITE}"
-    create_link_symbolic "/etc/nginx/sites-available/${NAME_SITE}" "/etc/nginx/sites-enabled/${NAME_SITE}"
-}
-
-config_nginx__site_www_blasmedina() {
-    local NAME_SITE="www.${DOMAIN}"
+config_nginx__site_redirect() {
     local CONTENT=$(cat <<-EOF
 server {
     listen 80;
     listen 443 ssl;
+    server_name ${DOMAIN};
+    ssl_certificate ${SCRIPT_DIR}/certs/certificate.crt;
+    ssl_certificate_key ${SCRIPT_DIR}/certs/private.key;
+    return 301 https://www.${DOMAIN}\$request_uri;
+}
 
-    server_name ${NAME_SITE};
+server {
+    listen 80;
+    server_name apps.${DOMAIN};
+    return 301 https://apps.${DOMAIN}\$request_uri;
+}
+EOF
+)
+    create_file "${CONTENT}" "/etc/nginx/sites-available/redirect"
+    create_link_symbolic "/etc/nginx/sites-available/redirect" "/etc/nginx/sites-enabled/redirect"
+}
 
+config_nginx__site_www_blasmedina() {
+    local CONTENT=$(cat <<-EOF
+server {
+    listen 443 ssl;
+    server_name www.${DOMAIN};
     ssl_certificate ${SCRIPT_DIR}/certs/certificate.crt;
     ssl_certificate_key ${SCRIPT_DIR}/certs/private.key;
     
@@ -273,19 +274,15 @@ server {
 }
 EOF
 )
-    create_file "${CONTENT}" "/etc/nginx/sites-available/${NAME_SITE}"
-    create_link_symbolic "/etc/nginx/sites-available/${NAME_SITE}" "/etc/nginx/sites-enabled/${NAME_SITE}"
+    create_file "${CONTENT}" "/etc/nginx/sites-available/www.${DOMAIN}"
+    create_link_symbolic "/etc/nginx/sites-available/www.${DOMAIN}" "/etc/nginx/sites-enabled/www.${DOMAIN}"
 }
 
 config_nginx__site_apps_blasmedina() {
-    local NAME_SITE="apps.${DOMAIN}"
     local CONTENT=$(cat <<-EOF
 server {
-    listen 80;
     listen 443 ssl;
-
-    server_name ${NAME_SITE};
-
+    server_name apps.${DOMAIN};
     ssl_certificate ${SCRIPT_DIR}/certs/certificate.crt;
     ssl_certificate_key ${SCRIPT_DIR}/certs/private.key;
 
@@ -297,13 +294,14 @@ server {
 }
 EOF
 )
-    create_file "${CONTENT}" "/etc/nginx/sites-available/${NAME_SITE}"
-    create_link_symbolic "/etc/nginx/sites-available/${NAME_SITE}" "/etc/nginx/sites-enabled/${NAME_SITE}"
+    create_file "${CONTENT}" "/etc/nginx/sites-available/apps.${DOMAIN}"
+    create_link_symbolic "/etc/nginx/sites-available/apps.${DOMAIN}" "/etc/nginx/sites-enabled/apps.${DOMAIN}"
 }
 
 config_nginx() {
+    echo "${BLUE}CONFIG NGINX${RESET}"
     config_nginx__base
-    config_nginx__site_blasmedina
+    config_nginx__site_redirect
     config_nginx__site_www_blasmedina
     config_nginx__site_apps_blasmedina
 }
