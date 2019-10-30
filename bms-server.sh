@@ -109,7 +109,7 @@ apps        IN      CNAME   ${DOMAIN}.
 ${ACME_CHALLENGE}
 EOF
 )
-    create_file "$IP" "$SCRIPT_DIR/ip"
+    create_file "$IP" "~/ip"
     create_file "${CONTENT}" "/etc/bind/zones/${DOMAIN}.db"
 }
 
@@ -558,7 +558,7 @@ install_apps() {
     echo "${BLUE}INSTALL APPS${RESET}"
     while read -r line; do
         install_apps__process $line
-    done < "apps.txt"
+    done < "${SCRIPT_DIR}/apps.txt"
     install_apps__process $line
 }
 
@@ -566,7 +566,7 @@ main() {
     local DEBUG=false
     local SCRIPT_DIR=$(pwd)
     local DOMAIN="blasmedina.cl"
-    local PATH_APPS="/data"
+    local PATH_APPS="~/apps"
     local CONTENT_PROXY=$(cat <<-EOF
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
