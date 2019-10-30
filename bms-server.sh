@@ -472,24 +472,24 @@ install() {
 server__stop() {
     if [ $DEBUG = false ]; then
         echo "${BLUE}SERVER STOP${RESET}"
-        service bind9 stop
-        service nginx stop
+        sudo service bind9 stop
+        sudo service nginx stop
     fi
 }
 
 server__reload() {
     if [ $DEBUG = false ]; then
         echo "${BLUE}SERVER RELOAD${RESET}"
-        service bind9 reload
-        service nginx reload
+        sudo service bind9 reload
+        sudo service nginx reload
     fi
 }
 
 server__start() {
     if [ $DEBUG = false ]; then
         echo "${BLUE}SERVER START${RESET}"
-        service bind9 start
-        service nginx start
+        sudo service bind9 start
+        sudo service nginx start
     fi
     server__reload
 }
