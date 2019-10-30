@@ -282,6 +282,7 @@ create_app_test__index() {
     local PATH_APP=$1
     local NAME_APP=$2
     local PORT_APP=$3
+    echo "${BLUE}CREATE APP TEST: ${NAME_APP}${RESET}"
     local CONTENT=$(cat <<-EOF
 require('dotenv').config();
 const http = require('http');
@@ -346,9 +347,9 @@ EOF
     create_file "${CONTENT}" "${PATH_APP}/ecosystem.config.js"
 }
 
-install_dependencies() {
-    echo "${BLUE}INSTALL DEPENDENCIES${RESET}"
+install_dependencies() {    
     local PATH_APP=$1
+    echo "${BLUE}INSTALL DEPENDENCIES: ${PATH_APP}${RESET}"
     if [ $DEBUG = false ]; then
         cd $PATH_APP && npm i
     fi
@@ -446,7 +447,7 @@ install__nginx() {
 
 install__nodejs() {
     if ! command_exists nodejs; then
-        curl -sL https://deb.nodesource.com/setup_10.x | bash -
+        curl -sL https://deb.nodesource.com/setup_12.x | bash -
         sudo apt install -y nodejs
     fi
 }
@@ -528,7 +529,7 @@ pm2_apps__start() {
 
 clear_all() {
     if [ $DEBUG = false ]; then
-        echo "${BLUE}clear all${RESET}"
+        echo "${BLUE}CLEAR ALL${RESET}"
         if [ -d "$PATH_APPS" ]; then
             rm -rf $PATH_APPS
         fi
