@@ -440,7 +440,7 @@ install__bind() {
 }
 
 install__nginx() {
-    if ! command_exists git; then
+    if ! command_exists nginx; then
         sudo apt install -y nginx
     fi
 }
@@ -463,8 +463,8 @@ install() {
         echo "${BLUE}INSTALL${RESET}"
         install__git
         install__bind
-        install__nodejs
         install__nginx
+        install__nodejs
         install__pm2
     fi
 }
