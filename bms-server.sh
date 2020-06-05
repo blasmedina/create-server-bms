@@ -531,16 +531,16 @@ clear_all() {
     if [ $DEBUG = false ]; then
         echo "${BLUE}CLEAR ALL${RESET}"
         if [ -d "$PATH_APPS" ]; then
-            rm -rf $PATH_APPS
+            sudo rm -rf $PATH_APPS
         fi
         if [ -d "/etc/nginx/default.d" ]; then
-            rm -rf /etc/nginx/default.d
+            sudo rm -rf /etc/nginx/default.d
         fi
         if [ -d "/etc/bind/zones" ]; then
-            rm -rf /etc/bind/zones
+            sudo rm -rf /etc/bind/zones
         fi
         if [ -d "/etc/nginx/sites-enabled" ]; then
-            rm /etc/nginx/sites-enabled/*
+            sudo rm /etc/nginx/sites-enabled/*
         fi
     fi
 }
